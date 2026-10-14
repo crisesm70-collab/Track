@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Tracker</title>
+<style>
+  :root {
+    --bg: #eef1f6;
+    --surface: #ffffff;
+    --surface-2: #f5f7fb;
+    --text: #1b2233;
+    --muted: #667088;
+    --line: #d9dfeb;
+    --accent: #3a4bb0;
+    --accent-text: #ffffff;
+    --empty: #e3e8f1;
+
+    /* depth scale */
+    --d1: #e5484d;  /* low */
+    --d2: #f59e0b;  /* moderate */
+    --d3: #46b963;  /* high */
+    --d4: #14703a;  /* higher */
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1320;
+      --surface: #161d2e;
+      --surface-2: #1c2438;
+      --text: #e8ecf5;
+      --muted: #96a0b8;
+      --line: #2a3450;
+      --accent: #8f9dff;
+      --accent-text: #0e1320;
+      --empty: #232c44;
+      --d1: #ef5a5f;
+      --d2: #f7a935;
+      --d3: #4cc46a;
+      --d4: #1f9a52;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 80px; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.35rem; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+  .sub { color: var(--muted); margin: 4px 0 0; }
+
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .add-form { display: flex; gap: 8px; flex-wrap: wrap; }
+  .add-form input[type=text] { flex: 1 1 220px; }
+  input[type=text], input[type=date], select, textarea {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    min-width: 0;
+  }
+  textarea { width: 100%; min-height: 220px; resize: vertical; line-height: 1.6; font-family: var(--serif); font-size: 1.05rem; }
+  .btn {
+    background: var(--accent); color: var(--accent-text);
+    border: 0; border-radius: 8px; padding: 10px 16px; font-weight: 600;
+  }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); font-weight: 500; }
+  .btn.danger { background: transparent; color: var(--d1); border: 1px solid var(--line); font-weight: 500; }
+  .btn.small { padding: 6px 10px; font-size: .9rem; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 16px; }
+  .card {
+    text-align: left; width: 100%;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px; display: block;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .card h3 { font-size: 1.15rem; overflow-wrap: anywhere; }
+  .badge {
+    font-size: .8rem; padding: 2px 10px; border-radius: 99px;
+    background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); white-space: nowrap;
+  }
+  .pct { font-family: var(--serif); font-size: 1.6rem; margin: 10px 0 4px; }
+  .pct small { font-family: var(--sans); font-size: .85rem; color: var(--muted); margin-left: 6px; }
+  .bar { height: 8px; background: var(--empty); border-radius: 99px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; border-radius: 99px; }
+  .meta { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: .88rem; margin-top: 10px; }
+  .strip { display: grid; grid-template-columns: repeat(14, 1fr); gap: 3px; margin-top: 12px; }
+  .strip i { aspect-ratio: 1; border-radius: 3px; background: var(--empty); display: block; }
+
+  .empty-state { text-align: center; color: var(--muted); padding: 40px 16px; }
+
+  /* depth colors */
+  .c1 { background: var(--d1) !important; }
+  .c2 { background: var(--d2) !important; }
+  .c3 { background: var(--d3) !important; }
+  .c4 { background: var(--d4) !important; }
+
+  /* topic view */
+  .back { margin-bottom: 14px; }
+  .topic-head { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+  .topic-head h1 { overflow-wrap: anywhere; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 16px 0; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .stat b { display: block; font-family: var(--serif); font-size: 1.6rem; line-height: 1.2; }
+  .stat span { color: var(--muted); font-size: .88rem; }
+  .section { margin-top: 18px; }
+  .section > h2 { margin-bottom: 10px; }
+
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cal-nav strong { font-family: var(--serif); font-size: 1.15rem; }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+  .dow { text-align: center; font-size: .8rem; color: var(--muted); padding-bottom: 2px; }
+  .day {
+    aspect-ratio: 1; border-radius: 8px; border: 2px solid transparent;
+    background: var(--empty); color: var(--text); font-size: .9rem; padding: 0;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .day.pad { background: transparent; pointer-events: none; }
+  .day.future { opacity: .35; pointer-events: none; }
+  .day.has { color: #fff; font-weight: 600; }
+  .day.today { border-color: var(--text); }
+  .day.sel { box-shadow: 0 0 0 3px var(--accent); }
+  .day sup { position: absolute; top: 2px; right: 4px; font-size: .62rem; opacity: .9; }
+
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px; font-size: .88rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; background: var(--empty); }
+
+  .depth-btns { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 10px; }
+  .depth-btns button {
+    border: 0; border-radius: 10px; padding: 12px 8px; color: #fff; font-weight: 600;
+  }
+  .depth-btns button.on { box-shadow: 0 0 0 3px var(--text); }
+  .hint { color: var(--muted); font-size: .88rem; margin: 8px 0 0; }
+  .logged { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .logged .chip { background: var(--surface-2); border: 1px solid var(--line); border-radius: 99px; padding: 2px 10px; font-size: .85rem; display: inline-flex; gap: 6px; align-items: center; }
+  .chip i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .saved { color: var(--muted); font-size: .85rem; min-height: 1.2em; margin-top: 6px; }
+  footer { margin-top: 36px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; color: var(--muted); font-size: .88rem; }
+  @media (prefers-reduced-motion: no-preference) {
+    .bar > i { transition: width .35s ease; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- constants ---------- */
+  var STORE_KEY = "study-tracker-v1";
+  var TYPES = ["Research", "Experiment", "Practice", "Reading", "Review", "Memorization", "Other"];
+  var DEPTHS = {
+    1: { name: "Low", points: 2 },
+    2: { name: "Moderate", points: 5 },
+    3: { name: "High", points: 9 },
+    4: { name: "Higher", points: 14 }
+  };
+  var MASTERY_SCALE = 60; // bigger = slower climb
+
+  /* ---------- state ---------- */
+  var state = { topics: [] };
+  var view = { id: null, year: 0, month: 0, date: today() };
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) state = JSON.parse(raw);
+      if (!state || !Array.isArray(state.topics)) state = { topics: [] };
+    } catch (e) { state = { topics: [] }; }
+  }
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); return true; }
+    catch (e) { return false; }
+  }
+
+  /* ---------- helpers ---------- */
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function toStr(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function today() { return toStr(new Date()); }
+  function parse(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function getTopic(id) { return state.topics.filter(function (t) { return t.id === id; })[0]; }
+  function nice(s) {
+    return parse(s).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  }
+
+  function mastery(t) {
+    var total = 0;
+    Object.keys(t.days).forEach(function (d) { total += DEPTHS[t.days[d].depth].points; });
+    return Math.round(100 * (1 - Math.exp(-total / MASTERY_SCALE)));
+  }
+  function masteryLabel(p) {
+    if (p < 20) return "Just starting";
+    if (p < 45) return "Building";
+    if (p < 70) return "Solid";
+    if (p < 90) return "Strong";
+    return "Deep mastery";
+  }
+  function masteryColor(p) {
+    if (p < 25) return "var(--d1)";
+    if (p < 50) return "var(--d2)";
+    if (p < 75) return "var(--d3)";
+    return "var(--d4)";
+  }
+  function daysStudied(t) { return Object.keys(t.days).length; }
+  function timesStudied(t) {
+    var n = 0;
+    Object.keys(t.days).forEach(function (d) { n += t.days[d].count || 1; });
+    return n;
+  }
+  function lastStudied(t) {
+    var keys = Object.keys(t.days).sort();
+    return keys.length ? keys[keys.length - 1] : null;
+  }
+
+  /* ---------- home ---------- */
+  function renderHome() {
+    var html = "";
+    html += '<div class="top"><div><h1>Study Tracker</h1>' +
+            '<p class="sub">Add what you\'re studying, log each day\'s depth, and watch mastery grow.</p></div></div>';
+
+    html += '<form class="panel add-form" id="addForm">' +
+            '<input type="text" id="newName" placeholder="New topic, e.g. Stoic ethics" maxlength="80" aria-label="Topic name" required>' +
+            '<select id="newType" aria-label="Type of study">' +
+            TYPES.map(function (t) { return "<option>" + t + "</option>"; }).join("") +
+            '</select><button class="btn" type="submit">Add topic</button></form>';
+
+    if (!state.topics.length) {
+      html += '<div class="empty-state">No topics yet. Add your first one above.</div>';
+    } else {
+      html += '<div class="grid">';
+      state.topics.forEach(function (t) {
+        var p = mastery(t);
+        var last = lastStudied(t);
+        html += '<button class="card" data-open="' + t.id + '">' +
+          '<div class="card-head"><h3>' + esc(t.name) + '</h3><span class="badge">' + esc(t.type) + '</span></div>' +
+          '<div class="pct">' + p + '%<small>' + masteryLabel(p) + '</small></div>' +
+          '<div class="bar"><i style="width:' + p + '%;background:' + masteryColor(p) + '"></i></div>' +
+          '<div class="meta"><span>Opened ' + t.opens + '×</span><span>Studied ' + timesStudied(t) + '×</span>' +
+          '<span>' + daysStudied(t) + ' day' + (daysStudied(t) === 1 ? "" : "s") + '</span>' +
+          (last ? '<span>Last: ' + esc(parse(last).toLocaleDateString(undefined, { month: "short", day: "numeric" })) + '</span>' : "") +
+          '</div>' + strip(t) + '</button>';
+      });
+      html += "</div>";
+    }
+
+    html += '<footer><span>Saved in this browser.</span>' +
+            '<button class="btn ghost small" id="exportBtn">Export backup</button>' +
+            '<button class="btn ghost small" id="importBtn">Import backup</button>' +
+            '<input type="file" id="importFile" accept="application/json" hidden></footer>';
+
+    app.innerHTML = html;
+
+    document.getElementById("addForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = document.getElementById("newName").value.trim();
+      if (!name) return;
+      state.topics.unshift({
+        id: uid(), name: name, type: document.getElementById("newType").value,
+        created: today(), opens: 0, notes: "", days: {}
+      });
+      save(); renderHome();
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-open]"), function (el) {
+      el.addEventListener("click", function () { openTopic(el.getAttribute("data-open")); });
+    });
+    document.getElementById("exportBtn").addEventListener("click", exportData);
+    document.getElementById("importBtn").addEventListener("click", function () { document.getElementById("importFile").click(); });
+    document.getElementById("importFile").addEventListener("change", importData);
+  }
+
+  function strip(t) {
+    var out = '<div class="strip" aria-hidden="true">';
+    var d = new Date();
+    d.setDate(d.getDate() - 13);
+    for (var i = 0; i < 14; i++) {
+      var s = toStr(d);
+      var e = t.days[s];
+      out += '<i class="' + (e ? "c" + e.depth : "") + '"></i>';
+      d.setDate(d.getDate() + 1);
+    }
+    return out + "</div>";
+  }
+
+  /* ---------- topic view ---------- */
+  function openTopic(id) {
+    var t = getTopic(id);
+    if (!t) return;
+    t.opens += 1;
+    save();
+    view.id = id;
+    view.date = today();
+    var n = new Date();
+    view.year = n.getFullYear();
+    view.month = n.getMonth();
+    renderTopic();
+    window.scrollTo(0, 0);
+  }
+
+  function renderTopic() {
+    var t = getTopic(view.id);
+    if (!t) { view.id = null; return renderHome(); }
+    var p = mastery(t);
+    var html = "";
+
+    html += '<button class="btn ghost back" id="backBtn">← All topics</button>';
+    html += '<div class="topic-head"><h1>' + esc(t.name) + '</h1>' +
+            '<div class="row"><select id="typeSel" aria-label="Type of study">' +
+            TYPES.map(function (x) { return "<option" + (x === t.type ? " selected" : "") + ">" + x + "</option>"; }).join("") +
+            '</select><button class="btn ghost small" id="renameBtn">Rename</button>' +
+            '<button class="btn danger small" id="delBtn">Delete</button></div></div>';
+
+    html += '<div class="stats">' +
+      '<div class="stat"><b>' + p + '%</b><span>Mastery · ' + masteryLabel(p) + '</span>' +
+        '<div class="bar" style="margin-top:8px"><i style="width:' + p + '%;background:' + masteryColor(p) + '"></i></div></div>' +
+      '<div class="stat"><b>' + t.opens + '</b><span>Times opened</span></div>' +
+      '<div class="stat"><b>' + timesStudied(t) + '</b><span>Times studied</span></div>' +
+      '<div class="stat"><b>' + daysStudied(t) + '</b><span>Days studied</span></div>' +
+      '<div class="stat"><b>' + esc(t.type) + '</b><span>Type of study</span></div>' +
+      '</div>';
+
+    // calendar
+    var first = new Date(view.year, view.month, 1);
+    var monthName = first.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+    var daysInMonth = new Date(view.year, view.month + 1, 0).getDate();
+    var lead = first.getDay();
+    var tdy = today();
+
+    html += '<div class="panel section"><h2>Days studied</h2>' +
+      '<div class="cal-nav"><button class="btn ghost small" id="prevM" aria-label="Previous month">‹ Prev</button>' +
+      '<strong>' + monthName + '</strong>' +
+      '<button class="btn ghost small" id="nextM" aria-label="Next month">Next ›</button></div>' +
+      '<div class="cal">';
+    ["S", "M", "T", "W", "T", "F", "S"].forEach(function (d) { html += '<div class="dow">' + d + "</div>"; });
+    for (var i = 0; i < lead; i++) html += '<div class="day pad"></div>';
+    for (var d = 1; d <= daysInMonth; d++) {
+      var s = view.year + "-" + pad(view.month + 1) + "-" + pad(d);
+      var e = t.days[s];
+      var cls = "day";
+      if (e) cls += " has c" + e.depth;
+      if (s === tdy) cls += " today";
+      if (s === view.date) cls += " sel";
+      if (s > tdy) cls += " future";
+      var label = nice(s) + (e ? ", " + DEPTHS[e.depth].name + " depth" : ", not studied");
+      html += '<button class="' + cls + '" data-date="' + s + '" aria-label="' + esc(label) + '">' + d +
+              (e && e.count > 1 ? "<sup>" + e.count + "</sup>" : "") + "</button>";
+    }
+    html += '</div>' +
+      '<div class="legend"><span><i></i>Not studied</span>' +
+      '<span><i class="c1"></i>Low</span><span><i class="c2"></i>Moderate</span>' +
+      '<span><i class="c3"></i>High</span><span><i class="c4"></i>Higher</span></div></div>';
+
+    // log panel
+    var cur = t.days[view.date];
+    html += '<div class="panel section"><h2>Log study: ' + esc(nice(view.date)) + '</h2>' +
+      '<div class="row"><label for="dateIn" class="hint" style="margin:0">Pick a different day</label>' +
+      '<input type="date" id="dateIn" value="' + view.date + '" max="' + tdy + '"></div>' +
+      '<p class="hint">How deep did you go? Tap a level to log it. Logging again on the same day counts as another study session and sets that day\'s depth to your latest pick.</p>' +
+      '<div class="depth-btns">' +
+      [1, 2, 3, 4].map(function (n) {
+        return '<button class="c' + n + (cur && cur.depth === n ? " on" : "") + '" data-depth="' + n + '">' +
+               DEPTHS[n].name + '</button>';
+      }).join("") + '</div>' +
+      (cur ? '<p class="hint">Logged: ' + DEPTHS[cur.depth].name + ' depth, ' + cur.count + ' session' + (cur.count === 1 ? "" : "s") +
+             '. <button class="btn ghost small" id="clearDay">Clear this day</button></p>' : "") +
+      '<p class="hint">Mastery adds up from each day\'s depth: Low = 2 points, Moderate = 5, High = 9, Higher = 14. Deeper days move it much faster, and gains slow down as you approach 100%.</p>' +
+      '</div>';
+
+    // notes
+    html += '<div class="panel section"><h2>Notes</h2>' +
+      '<textarea id="notes" placeholder="Write what you learned, questions, ideas, sources...">' + esc(t.notes) + '</textarea>' +
+      '<div class="saved" id="savedMsg" aria-live="polite"></div></div>';
+
+    app.innerHTML = html;
+    bindTopic(t);
+  }
+
+  var noteTimer = null;
+  function bindTopic(t) {
+    document.getElementById("backBtn").addEventListener("click", function () { view.id = null; renderHome(); });
+    document.getElementById("typeSel").addEventListener("change", function (e) {
+      t.type = e.target.value; save(); renderTopic();
+    });
+    document.getElementById("renameBtn").addEventListener("click", function () {
+      var n = prompt("Rename topic", t.name);
+      if (n && n.trim()) { t.name = n.trim().slice(0, 80); save(); renderTopic(); }
+    });
+    document.getElementById("delBtn").addEventListener("click", function () {
+      if (confirm('Delete "' + t.name + '" and all its notes and study days? This cannot be undone.')) {
+        state.topics = state.topics.filter(function (x) { return x.id !== t.id; });
+        save(); view.id = null; renderHome();
+      }
+    });
+    document.getElementById("prevM").addEventListener("click", function () { shiftMonth(-1); });
+    document.getElementById("nextM").addEventListener("click", function () { shiftMonth(1); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-date]"), function (el) {
+      el.addEventListener("click", function () { view.date = el.getAttribute("data-date"); renderTopic(); });
+    });
+    document.getElementById("dateIn").addEventListener("change", function (e) {
+      var v = e.target.value;
+      if (!v || v > today()) return;
+      view.date = v;
+      var d = parse(v);
+      view.year = d.getFullYear(); view.month = d.getMonth();
+      renderTopic();
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-depth]"), function (el) {
+      el.addEventListener("click", function () {
+        var depth = +el.getAttribute("data-depth");
+        var e = t.days[view.date];
+        t.days[view.date] = { depth: depth, count: e ? (e.count || 1) + 1 : 1 };
+        save(); renderTopic();
+      });
+    });
+    var clear = document.getElementById("clearDay");
+    if (clear) clear.addEventListener("click", function () {
+      delete t.days[view.date]; save(); renderTopic();
+    });
+    document.getElementById("notes").addEventListener("input", function (e) {
+      t.notes = e.target.value;
+      var msg = document.getElementById("savedMsg");
+      msg.textContent = "Saving…";
+      clearTimeout(noteTimer);
+      noteTimer = setTimeout(function () {
+        msg.textContent = save() ? "Saved" : "Could not save. Browser storage may be blocked.";
+      }, 400);
+    });
+  }
+
+  function shiftMonth(delta) {
+    view.month += delta;
+    if (view.month < 0) { view.month = 11; view.year--; }
+    if (view.month > 11) { view.month = 0; view.year++; }
+    renderTopic();
+  }
+
+  /* ---------- backup ---------- */
+  function exportData() {
+    var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "study-tracker-backup-" + today() + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  function importData(e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var data = JSON.parse(r.result);
+        if (!data || !Array.isArray(data.topics)) throw new Error("bad file");
+        if (confirm("Replace your current topics with this backup?")) {
+          state = data; save(); renderHome();
+        }
+      } catch (err) { alert("That file isn't a valid Study Tracker backup."); }
+    };
+    r.readAsText(f);
+  }
+
+  /* ---------- start ---------- */
+  var app = document.getElementById("app");
+  load();
+  renderHome();
+})();
+</script>
+</body>
+</html>
