@@ -3,159 +3,189 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
 <title>Study Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #eef1f6;
-    --surface: #ffffff;
-    --surface-2: #f5f7fb;
-    --text: #1b2233;
-    --muted: #667088;
-    --line: #d9dfeb;
-    --accent: #3a4bb0;
-    --accent-text: #ffffff;
-    --empty: #e3e8f1;
+    --bg: #0b1021;
+    --panel: #131a33;
+    --panel-2: #19224261;
+    --panel-solid: #192242;
+    --line: #232d52;
+    --text: #e9edfb;
+    --muted: #8b95b8;
+    --purple: #7b4fe8;
+    --purple-hover: #8d66f0;
+    --empty: #0f1530;
+    --empty-line: #1b2444;
 
-    /* depth scale */
-    --d1: #e5484d;  /* low */
-    --d2: #f59e0b;  /* moderate */
-    --d3: #46b963;  /* high */
-    --d4: #14703a;  /* higher */
+    --d1: #8e3b40;   /* low */
+    --d2: #8d6030;   /* moderate */
+    --d3: #3f7d5a;   /* high */
+    --d4: #27593c;   /* higher */
 
-    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0e1320;
-      --surface: #161d2e;
-      --surface-2: #1c2438;
-      --text: #e8ecf5;
-      --muted: #96a0b8;
-      --line: #2a3450;
-      --accent: #8f9dff;
-      --accent-text: #0e1320;
-      --empty: #232c44;
-      --d1: #ef5a5f;
-      --d2: #f7a935;
-      --d3: #4cc46a;
-      --d4: #1f9a52;
-    }
+    --m1: #5a2a30;
+    --m2: #5c4025;
+    --m3: #2f5f46;
+    --m4: #234b35;
+
+    --label-w: 192px;
+    --cell-w: 104px;
+    --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; background: var(--bg); }
   body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 16px;
-    line-height: 1.5;
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--font); font-size: 15px; line-height: 1.5;
   }
-  .wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 80px; }
-  h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; letter-spacing: -0.01em; }
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.35rem; }
   button, input, select, textarea { font: inherit; color: inherit; }
   button { cursor: pointer; }
-  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  :focus-visible { outline: 3px solid #a995ff; outline-offset: 2px; }
+  h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -0.01em; }
 
-  .top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-  .sub { color: var(--muted); margin: 4px 0 0; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 22px 16px 80px; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .top h1 { font-size: 1.6rem; }
+  .sub { color: var(--muted); margin: 2px 0 0; font-size: .9rem; }
 
-  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
-  .add-form { display: flex; gap: 8px; flex-wrap: wrap; }
-  .add-form input[type=text] { flex: 1 1 220px; }
-  input[type=text], input[type=date], select, textarea {
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 10px 12px;
-    min-width: 0;
-  }
-  textarea { width: 100%; min-height: 220px; resize: vertical; line-height: 1.6; font-family: var(--serif); font-size: 1.05rem; }
   .btn {
-    background: var(--accent); color: var(--accent-text);
-    border: 0; border-radius: 8px; padding: 10px 16px; font-weight: 600;
+    border: 0; border-radius: 10px; padding: 10px 16px; font-weight: 600;
+    background: var(--panel-solid); color: var(--text); border: 1px solid var(--line);
   }
-  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); font-weight: 500; }
-  .btn.danger { background: transparent; color: var(--d1); border: 1px solid var(--line); font-weight: 500; }
-  .btn.small { padding: 6px 10px; font-size: .9rem; }
+  .btn.primary { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .btn.primary:hover { background: var(--purple-hover); }
+  .btn.danger { color: #ff8087; }
+  .btn.small { padding: 6px 12px; font-size: .88rem; font-weight: 500; }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 16px; }
-  .card {
-    text-align: left; width: 100%;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
-    padding: 16px; display: block;
-  }
-  .card:hover { border-color: var(--accent); }
-  .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-  .card h3 { font-size: 1.15rem; overflow-wrap: anywhere; }
-  .badge {
-    font-size: .8rem; padding: 2px 10px; border-radius: 99px;
-    background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); white-space: nowrap;
-  }
-  .pct { font-family: var(--serif); font-size: 1.6rem; margin: 10px 0 4px; }
-  .pct small { font-family: var(--sans); font-size: .85rem; color: var(--muted); margin-left: 6px; }
-  .bar { height: 8px; background: var(--empty); border-radius: 99px; overflow: hidden; }
-  .bar > i { display: block; height: 100%; border-radius: 99px; }
-  .meta { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: .88rem; margin-top: 10px; }
-  .strip { display: grid; grid-template-columns: repeat(14, 1fr); gap: 3px; margin-top: 12px; }
-  .strip i { aspect-ratio: 1; border-radius: 3px; background: var(--empty); display: block; }
-
-  .empty-state { text-align: center; color: var(--muted); padding: 40px 16px; }
-
-  /* depth colors */
-  .c1 { background: var(--d1) !important; }
-  .c2 { background: var(--d2) !important; }
-  .c3 { background: var(--d3) !important; }
-  .c4 { background: var(--d4) !important; }
-
-  /* topic view */
-  .back { margin-bottom: 14px; }
-  .topic-head { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
-  .topic-head h1 { overflow-wrap: anywhere; }
-  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 16px 0; }
-  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
-  .stat b { display: block; font-family: var(--serif); font-size: 1.6rem; line-height: 1.2; }
-  .stat span { color: var(--muted); font-size: .88rem; }
-  .section { margin-top: 18px; }
-  .section > h2 { margin-bottom: 10px; }
-
-  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .cal-nav strong { font-family: var(--serif); font-size: 1.15rem; }
-  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-  .dow { text-align: center; font-size: .8rem; color: var(--muted); padding-bottom: 2px; }
-  .day {
-    aspect-ratio: 1; border-radius: 8px; border: 2px solid transparent;
-    background: var(--empty); color: var(--text); font-size: .9rem; padding: 0;
-    display: flex; align-items: center; justify-content: center; position: relative;
-  }
-  .day.pad { background: transparent; pointer-events: none; }
-  .day.future { opacity: .35; pointer-events: none; }
-  .day.has { color: #fff; font-weight: 600; }
-  .day.today { border-color: var(--text); }
-  .day.sel { box-shadow: 0 0 0 3px var(--accent); }
-  .day sup { position: absolute; top: 2px; right: 4px; font-size: .62rem; opacity: .9; }
-
-  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px; font-size: .88rem; color: var(--muted); }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: .85rem; color: var(--muted); margin: 0 0 14px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .legend i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; background: var(--empty); }
+  .legend i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; background: var(--empty); border: 1px solid var(--empty-line); }
+  .legend i.c1 { background: var(--d1); border-color: transparent; }
+  .legend i.c2 { background: var(--d2); border-color: transparent; }
+  .legend i.c3 { background: var(--d3); border-color: transparent; }
+  .legend i.c4 { background: var(--d4); border-color: transparent; }
 
-  .depth-btns { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 10px; }
-  .depth-btns button {
-    border: 0; border-radius: 10px; padding: 12px 8px; color: #fff; font-weight: 600;
+  .c1 { background: var(--d1); }
+  .c2 { background: var(--d2); }
+  .c3 { background: var(--d3); }
+  .c4 { background: var(--d4); }
+
+  /* ---------- board ---------- */
+  .board { overflow-x: auto; padding-bottom: 12px; -webkit-overflow-scrolling: touch; }
+  .rows { display: flex; flex-direction: column; gap: 8px; min-width: max-content; }
+  .row { display: flex; gap: 8px; }
+
+  .label {
+    position: sticky; left: 0; z-index: 3;
+    flex: 0 0 var(--label-w); width: var(--label-w);
+    display: flex; align-items: center; border-radius: 12px;
+    box-shadow: 8px 0 0 0 var(--bg);
+    min-height: 80px;
   }
-  .depth-btns button.on { box-shadow: 0 0 0 3px var(--text); }
-  .hint { color: var(--muted); font-size: .88rem; margin: 8px 0 0; }
-  .logged { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
-  .logged .chip { background: var(--surface-2); border: 1px solid var(--line); border-radius: 99px; padding: 2px 10px; font-size: .85rem; display: inline-flex; gap: 6px; align-items: center; }
-  .chip i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-  .saved { color: var(--muted); font-size: .85rem; min-height: 1.2em; margin-top: 6px; }
-  footer { margin-top: 36px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; color: var(--muted); font-size: .88rem; }
-  @media (prefers-reduced-motion: no-preference) {
-    .bar > i { transition: width .35s ease; }
+  .label.m1 { background: var(--m1); }
+  .label.m2 { background: var(--m2); }
+  .label.m3 { background: var(--m3); }
+  .label.m4 { background: var(--m4); }
+  .label .open {
+    flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px;
+    background: none; border: 0; text-align: left; padding: 8px 0 8px 10px; color: #fff; border-radius: 12px;
+  }
+  .label .txt { min-width: 0; display: flex; flex-direction: column; }
+  .label .nm { font-weight: 600; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .label small { font-size: .68rem; color: rgba(255,255,255,.72); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.35; }
+  .label .dots {
+    flex: 0 0 30px; align-self: stretch; background: none; border: 0; color: rgba(255,255,255,.8);
+    font-size: 1.2rem; border-radius: 12px;
+  }
+  .ring { flex: 0 0 auto; }
+
+  .cell {
+    flex: 0 0 var(--cell-w); width: var(--cell-w); height: 80px; border: 0; border-radius: 12px;
+    color: #fff; position: relative; padding: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  }
+  .cell .d { font-size: .7rem; font-weight: 500; opacity: .85; }
+  .cell b { font-size: 1.05rem; font-weight: 700; }
+  .cell:not(.none):hover { filter: brightness(1.15); }
+  .cell.none { background: var(--empty); border: 1px solid var(--empty-line); color: var(--muted); }
+  .cell.none:hover { border-color: #3a4678; color: var(--text); }
+  .cell.today { box-shadow: inset 0 0 0 2px rgba(255,255,255,.6); }
+  .note-dot { position: absolute; top: 8px; right: 9px; width: 7px; height: 7px; border-radius: 50%; background: #fff; opacity: .9; }
+
+  .more { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; color: var(--muted); font-size: .85rem; }
+  .empty-state { text-align: center; color: var(--muted); padding: 60px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
+  .empty-state p { margin: 0 0 16px; }
+
+  footer { margin-top: 32px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; color: var(--muted); font-size: .85rem; }
+
+  /* ---------- topic view ---------- */
+  .back { margin-bottom: 14px; }
+  .thead { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: space-between; }
+  .thead .who { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .thead h1 { font-size: 1.6rem; overflow-wrap: anywhere; }
+  .thead .ring-wrap { flex: 0 0 auto; border-radius: 50%; padding: 6px; }
+  .row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  select, input[type=text], textarea {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; color: var(--text); min-width: 0;
+  }
+  select { padding: 8px 10px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 18px 0; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .stat b { display: block; font-size: 1.5rem; line-height: 1.2; font-weight: 700; }
+  .stat span { color: var(--muted); font-size: .82rem; }
+  .sec-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 22px 0 10px; flex-wrap: wrap; }
+  .sec-head h2 { font-size: 1.15rem; }
+  .entry {
+    background: var(--panel); border: 1px solid var(--line); border-left-width: 5px; border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 10px;
+  }
+  .entry.b1 { border-left-color: var(--d1); }
+  .entry.b2 { border-left-color: var(--d2); }
+  .entry.b3 { border-left-color: var(--d3); }
+  .entry.b4 { border-left-color: var(--d4); }
+  .entry header { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .entry h3 { font-size: 1rem; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: .8rem; margin-top: 2px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .note { white-space: pre-wrap; overflow-wrap: anywhere; margin: 10px 0 0; line-height: 1.65; }
+  .hint { color: var(--muted); font-size: .85rem; margin: 6px 0 0; }
+  .legacy textarea { width: 100%; min-height: 120px; resize: vertical; line-height: 1.6; }
+
+  /* ---------- modal ---------- */
+  .overlay {
+    position: fixed; inset: 0; z-index: 50; background: rgba(4,7,16,.72);
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+    width: 100%; max-width: 460px; max-height: 92vh; overflow: auto;
+  }
+  .modal h3 { font-size: 1.15rem; }
+  .msub { color: var(--muted); margin: 2px 0 14px; font-size: .9rem; }
+  .lbl { display: block; font-size: .85rem; font-weight: 600; margin: 14px 0 6px; }
+  .depth-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .dbtn { border: 0; border-radius: 10px; padding: 12px 4px; color: #fff; font-weight: 600; font-size: .82rem; }
+  .dbtn.on { box-shadow: 0 0 0 2px #fff; }
+  .stepper { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: .9rem; }
+  .stepper div { display: flex; align-items: center; gap: 10px; }
+  .stepper button { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel-solid); font-size: 1.1rem; }
+  .stepper b { min-width: 20px; text-align: center; }
+  .modal textarea { width: 100%; min-height: 150px; resize: vertical; line-height: 1.55; }
+  .err { color: #ff8087; font-size: .85rem; min-height: 1.3em; margin-top: 8px; }
+  .actions { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+  .grow { flex: 1; }
+  .menu-list { display: flex; flex-direction: column; gap: 8px; }
+  .menu-list button { text-align: left; }
+  .modal form { display: flex; flex-direction: column; gap: 10px; }
+
+  @media (max-width: 520px) {
+    :root { --label-w: 158px; --cell-w: 96px; }
+    .label .counts { display: none; }
+    .depth-btns { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
@@ -175,18 +205,38 @@
     3: { name: "High", points: 9 },
     4: { name: "Higher", points: 14 }
   };
-  var MASTERY_SCALE = 60; // bigger = slower climb
+  var MASTERY_SCALE = 60;   // bigger number = mastery climbs more slowly
 
   /* ---------- state ---------- */
   var state = { topics: [] };
-  var view = { id: null, year: 0, month: 0, date: today() };
+  var view = { topicId: null, extra: 0, asc: true, savedX: 0, savedY: 0 };
+  var app = document.getElementById("app");
+  var modalEl = null;
 
   function load() {
     try {
       var raw = localStorage.getItem(STORE_KEY);
       if (raw) state = JSON.parse(raw);
-      if (!state || !Array.isArray(state.topics)) state = { topics: [] };
     } catch (e) { state = { topics: [] }; }
+    normalize();
+  }
+  function normalize() {
+    if (!state || !Array.isArray(state.topics)) state = { topics: [] };
+    state.topics.forEach(function (t) {
+      t.id = t.id || uid();
+      t.name = String(t.name || "Untitled");
+      if (TYPES.indexOf(t.type) < 0) t.type = "Other";
+      t.opens = +t.opens || 0;
+      t.notes = typeof t.notes === "string" ? t.notes : "";
+      if (!t.days || typeof t.days !== "object") t.days = {};
+      Object.keys(t.days).forEach(function (d) {
+        var e = t.days[d];
+        if (!e || !/^\d{4}-\d{2}-\d{2}$/.test(d)) { delete t.days[d]; return; }
+        var depth = +e.depth;
+        if (!(depth >= 1 && depth <= 4)) depth = 1;
+        t.days[d] = { depth: depth, count: Math.max(1, +e.count || 1), note: typeof e.note === "string" ? e.note : "" };
+      });
+    });
   }
   function save() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); return true; }
@@ -205,15 +255,38 @@
   }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function getTopic(id) { return state.topics.filter(function (t) { return t.id === id; })[0]; }
-  function nice(s) {
-    return parse(s).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+  function yearOf(s) { return +s.slice(0, 4); }
+  function thisYear() { return new Date().getFullYear(); }
+
+  function cellLabel(s) {
+    var d = parse(s);
+    if (s === today()) return "Today, " + d.toLocaleDateString(undefined, { weekday: "short" });
+    var txt = d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+    if (yearOf(s) !== thisYear()) txt += " '" + String(yearOf(s)).slice(2);
+    return txt;
+  }
+  function noteDate(s) {   // "Jun 15, Tuesday"
+    var d = parse(s);
+    var txt = d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    if (yearOf(s) !== thisYear()) txt += ", " + yearOf(s);
+    return txt + ", " + d.toLocaleDateString(undefined, { weekday: "long" });
+  }
+  function fullDate(s) {
+    return parse(s).toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
   }
 
+  function masteryFrom(total) { return Math.round(100 * (1 - Math.exp(-total / MASTERY_SCALE))); }
   function mastery(t) {
     var total = 0;
     Object.keys(t.days).forEach(function (d) { total += DEPTHS[t.days[d].depth].points; });
-    return Math.round(100 * (1 - Math.exp(-total / MASTERY_SCALE)));
+    return masteryFrom(total);
   }
+  function cumulative(t) {   // mastery % after each studied day
+    var keys = Object.keys(t.days).sort(), tot = 0, out = {};
+    keys.forEach(function (d) { tot += DEPTHS[t.days[d].depth].points; out[d] = masteryFrom(tot); });
+    return out;
+  }
+  function band(p) { return p < 25 ? 1 : p < 50 ? 2 : p < 75 ? 3 : 4; }
   function masteryLabel(p) {
     if (p < 20) return "Just starting";
     if (p < 45) return "Building";
@@ -221,242 +294,298 @@
     if (p < 90) return "Strong";
     return "Deep mastery";
   }
-  function masteryColor(p) {
-    if (p < 25) return "var(--d1)";
-    if (p < 50) return "var(--d2)";
-    if (p < 75) return "var(--d3)";
-    return "var(--d4)";
-  }
   function daysStudied(t) { return Object.keys(t.days).length; }
   function timesStudied(t) {
     var n = 0;
-    Object.keys(t.days).forEach(function (d) { n += t.days[d].count || 1; });
+    Object.keys(t.days).forEach(function (d) { n += t.days[d].count; });
     return n;
   }
-  function lastStudied(t) {
-    var keys = Object.keys(t.days).sort();
-    return keys.length ? keys[keys.length - 1] : null;
+
+  function ring(p, size) {
+    var sw = 3.5, r = (size - sw) / 2, c = 2 * Math.PI * r, dash = (c * p / 100).toFixed(2), h = size / 2;
+    return '<svg class="ring" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '" aria-hidden="true">' +
+      '<circle cx="' + h + '" cy="' + h + '" r="' + r + '" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="' + sw + '"/>' +
+      '<circle cx="' + h + '" cy="' + h + '" r="' + r + '" fill="none" stroke="#fff" stroke-width="' + sw + '" stroke-linecap="round" ' +
+      'stroke-dasharray="' + dash + ' ' + c.toFixed(2) + '" transform="rotate(-90 ' + h + ' ' + h + ')"/>' +
+      '<text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="' + (size * 0.27).toFixed(1) + '" font-weight="700">' + p + '%</text></svg>';
   }
 
-  /* ---------- home ---------- */
-  function renderHome() {
-    var html = "";
-    html += '<div class="top"><div><h1>Study Tracker</h1>' +
-            '<p class="sub">Add what you\'re studying, log each day\'s depth, and watch mastery grow.</p></div></div>';
+  /* ---------- date range for the board ---------- */
+  function dateList() {
+    var earliest = null;
+    state.topics.forEach(function (t) {
+      Object.keys(t.days).forEach(function (d) { if (!earliest || d < earliest) earliest = d; });
+    });
+    var back = 13;
+    if (earliest) {
+      var diff = Math.round((parse(today()) - parse(earliest)) / 86400000);
+      back = Math.max(back, diff);
+    }
+    back += view.extra;
+    var list = [], d = parse(today());
+    for (var i = 0; i <= back; i++) { list.push(toStr(d)); d.setDate(d.getDate() - 1); }
+    return list;
+  }
 
-    html += '<form class="panel add-form" id="addForm">' +
-            '<input type="text" id="newName" placeholder="New topic, e.g. Stoic ethics" maxlength="80" aria-label="Topic name" required>' +
-            '<select id="newType" aria-label="Type of study">' +
-            TYPES.map(function (t) { return "<option>" + t + "</option>"; }).join("") +
-            '</select><button class="btn" type="submit">Add topic</button></form>';
+  /* ---------- drawing ---------- */
+  function render() {
+    var b = document.getElementById("board");
+    var sx = b ? b.scrollLeft : 0, sy = window.scrollY;
+    draw();
+    var b2 = document.getElementById("board");
+    if (b2) b2.scrollLeft = sx;
+    window.scrollTo(0, sy);
+  }
+  function draw() {
+    if (view.topicId && getTopic(view.topicId)) drawTopic();
+    else { view.topicId = null; drawBoard(); }
+  }
+
+  function drawBoard() {
+    var html = '<div class="top"><div><h1>Study Tracker</h1>' +
+      '<p class="sub">Tap a day to log it. Tap a topic to read its notes. Swipe left for older days.</p></div>' +
+      '<button class="btn primary" data-act="add">+ Add topic</button></div>';
+
+    html += '<div class="legend"><span><i class="c1"></i>Low</span><span><i class="c2"></i>Moderate</span>' +
+            '<span><i class="c3"></i>High</span><span><i class="c4"></i>Higher</span><span><i></i>Not studied</span></div>';
 
     if (!state.topics.length) {
-      html += '<div class="empty-state">No topics yet. Add your first one above.</div>';
+      html += '<div class="empty-state"><p>No topics yet. Add what you want to study.</p>' +
+              '<button class="btn primary" data-act="add">+ Add your first topic</button></div>';
     } else {
-      html += '<div class="grid">';
+      var dates = dateList(), tdy = today();
+      html += '<div class="board" id="board"><div class="rows">';
       state.topics.forEach(function (t) {
-        var p = mastery(t);
-        var last = lastStudied(t);
-        html += '<button class="card" data-open="' + t.id + '">' +
-          '<div class="card-head"><h3>' + esc(t.name) + '</h3><span class="badge">' + esc(t.type) + '</span></div>' +
-          '<div class="pct">' + p + '%<small>' + masteryLabel(p) + '</small></div>' +
-          '<div class="bar"><i style="width:' + p + '%;background:' + masteryColor(p) + '"></i></div>' +
-          '<div class="meta"><span>Opened ' + t.opens + '×</span><span>Studied ' + timesStudied(t) + '×</span>' +
-          '<span>' + daysStudied(t) + ' day' + (daysStudied(t) === 1 ? "" : "s") + '</span>' +
-          (last ? '<span>Last: ' + esc(parse(last).toLocaleDateString(undefined, { month: "short", day: "numeric" })) + '</span>' : "") +
-          '</div>' + strip(t) + '</button>';
+        var p = mastery(t), cum = cumulative(t);
+        html += '<div class="row"><div class="label m' + band(p) + '">' +
+          '<button class="open" data-topic="' + t.id + '" aria-label="Open notes for ' + esc(t.name) + '">' + ring(p, 38) +
+          '<span class="txt"><span class="nm">' + esc(t.name) + '</span>' +
+          '<small>' + esc(t.type) + '</small>' +
+          '<small class="counts">' + t.opens + ' opens, ' + timesStudied(t) + ' studied</small></span></button>' +
+          '<button class="dots" data-menu="' + t.id + '" aria-label="Options for ' + esc(t.name) + '">⋮</button></div>';
+        dates.forEach(function (s) {
+          var e = t.days[s], cls = "cell", inner;
+          if (s === tdy) cls += " today";
+          if (e) {
+            cls += " c" + e.depth;
+            inner = '<span class="d">' + esc(cellLabel(s)) + '</span><b>' + cum[s] + '%</b>' + (e.note ? '<span class="note-dot" title="Has notes"></span>' : "");
+          } else {
+            cls += " none";
+            inner = '<span class="d">' + esc(cellLabel(s)) + '</span>';
+          }
+          html += '<button class="' + cls + '" data-cell="' + t.id + '|' + s + '" aria-label="' +
+                  esc(t.name + ", " + fullDate(s) + (e ? ", " + DEPTHS[e.depth].name + " depth" : ", not studied")) + '">' + inner + '</button>';
+        });
+        html += '</div>';
       });
-      html += "</div>";
+      html += '</div></div>';
+      html += '<div class="more"><button class="btn small" data-act="more">Show 30 earlier days</button>' +
+              '<span>Showing back to ' + esc(cellLabel(dates[dates.length - 1])) + '</span></div>';
     }
 
     html += '<footer><span>Saved in this browser.</span>' +
-            '<button class="btn ghost small" id="exportBtn">Export backup</button>' +
-            '<button class="btn ghost small" id="importBtn">Import backup</button>' +
+            '<button class="btn small" data-act="export">Export backup</button>' +
+            '<button class="btn small" data-act="import">Import backup</button>' +
             '<input type="file" id="importFile" accept="application/json" hidden></footer>';
-
     app.innerHTML = html;
+  }
 
-    document.getElementById("addForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      var name = document.getElementById("newName").value.trim();
-      if (!name) return;
-      state.topics.unshift({
-        id: uid(), name: name, type: document.getElementById("newType").value,
-        created: today(), opens: 0, notes: "", days: {}
+  function drawTopic() {
+    var t = getTopic(view.topicId), p = mastery(t);
+    var keys = Object.keys(t.days).sort();
+    if (!view.asc) keys.reverse();
+    var withNotes = keys.filter(function (d) { return t.days[d].note; });
+    var noNotes = keys.length - withNotes.length;
+
+    var html = '<button class="btn back" data-act="back">← Back to board</button>';
+    html += '<div class="thead"><div class="who"><span class="ring-wrap m' + band(p) + '" style="background:var(--m' + band(p) + ')">' + ring(p, 62) + '</span>' +
+      '<div><h1>' + esc(t.name) + '</h1><p class="sub">' + esc(t.type) + ' · ' + masteryLabel(p) + '</p></div></div>' +
+      '<div class="row-actions"><select id="typeSel" aria-label="Type of study">' +
+      TYPES.map(function (x) { return "<option" + (x === t.type ? " selected" : "") + ">" + x + "</option>"; }).join("") +
+      '</select><button class="btn small" data-act="rename">Rename</button>' +
+      '<button class="btn small danger" data-act="delete">Delete</button></div></div>';
+
+    html += '<div class="stats">' +
+      '<div class="stat"><b>' + p + '%</b><span>Mastery</span></div>' +
+      '<div class="stat"><b>' + t.opens + '</b><span>Times opened</span></div>' +
+      '<div class="stat"><b>' + timesStudied(t) + '</b><span>Times studied</span></div>' +
+      '<div class="stat"><b>' + daysStudied(t) + '</b><span>Days studied</span></div></div>';
+
+    html += '<div class="sec-head"><h2>Notes by day</h2>' +
+            '<button class="btn small" data-act="sort">' + (view.asc ? "Oldest first" : "Newest first") + ' (switch)</button></div>';
+
+    if (!withNotes.length) {
+      html += '<div class="empty-state"><p>No notes yet. Tap a day on the board and write one.</p></div>';
+    } else {
+      withNotes.forEach(function (d) {
+        var e = t.days[d];
+        html += '<article class="entry b' + e.depth + '"><header><div><h3>' + esc(noteDate(d)) + '</h3>' +
+          '<span class="tag"><i class="dot c' + e.depth + '"></i>' + DEPTHS[e.depth].name + ' depth, ' + e.count + ' session' + (e.count === 1 ? "" : "s") + '</span></div>' +
+          '<button class="btn small" data-edit="' + d + '">Edit</button></header>' +
+          '<p class="note">' + esc(e.note) + '</p></article>';
       });
-      save(); renderHome();
-    });
-    Array.prototype.forEach.call(document.querySelectorAll("[data-open]"), function (el) {
-      el.addEventListener("click", function () { openTopic(el.getAttribute("data-open")); });
-    });
-    document.getElementById("exportBtn").addEventListener("click", exportData);
-    document.getElementById("importBtn").addEventListener("click", function () { document.getElementById("importFile").click(); });
-    document.getElementById("importFile").addEventListener("change", importData);
-  }
-
-  function strip(t) {
-    var out = '<div class="strip" aria-hidden="true">';
-    var d = new Date();
-    d.setDate(d.getDate() - 13);
-    for (var i = 0; i < 14; i++) {
-      var s = toStr(d);
-      var e = t.days[s];
-      out += '<i class="' + (e ? "c" + e.depth : "") + '"></i>';
-      d.setDate(d.getDate() + 1);
     }
-    return out + "</div>";
+    if (noNotes > 0 && withNotes.length) {
+      html += '<p class="hint">' + noNotes + ' studied day' + (noNotes === 1 ? " has" : "s have") + ' no notes.</p>';
+    }
+
+    if (t.notes.trim()) {
+      html += '<div class="sec-head"><h2>Earlier notes</h2></div><div class="legacy">' +
+              '<textarea id="legacyNotes" aria-label="Earlier notes">' + esc(t.notes) + '</textarea>' +
+              '<p class="hint">Written in the first version, before notes were added per day.</p></div>';
+    }
+    app.innerHTML = html;
   }
 
-  /* ---------- topic view ---------- */
+  /* ---------- modal ---------- */
+  function openModal(html, ready) {
+    closeModal();
+    var ov = document.createElement("div");
+    ov.className = "overlay";
+    ov.innerHTML = '<div class="modal" role="dialog" aria-modal="true" tabindex="-1">' + html + "</div>";
+    document.body.appendChild(ov);
+    modalEl = ov;
+    document.body.style.overflow = "hidden";
+    ov.addEventListener("mousedown", function (e) { if (e.target === ov) closeModal(); });
+    var m = ov.firstChild;
+    m.focus();
+    if (ready) ready(m);
+  }
+  function closeModal() {
+    if (modalEl) { modalEl.remove(); modalEl = null; document.body.style.overflow = ""; }
+  }
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
+
+  function typeOptions(sel) {
+    return TYPES.map(function (x) { return "<option" + (x === sel ? " selected" : "") + ">" + x + "</option>"; }).join("");
+  }
+
+  function openAdd() {
+    openModal('<h3>Add topic</h3><p class="msub">What do you want to study?</p>' +
+      '<form id="addForm"><input type="text" id="newName" maxlength="80" placeholder="e.g. Stoic ethics" aria-label="Topic name" required>' +
+      '<label class="lbl" for="newType" style="margin:4px 0 0">Type of study</label><select id="newType">' + typeOptions("Research") + '</select>' +
+      '<div class="actions"><span class="grow"></span><button type="button" class="btn" data-do="cancel">Cancel</button>' +
+      '<button type="submit" class="btn primary">Add topic</button></div></form>',
+      function (m) {
+        m.querySelector("[data-do=cancel]").addEventListener("click", closeModal);
+        m.querySelector("#addForm").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var name = m.querySelector("#newName").value.trim();
+          if (!name) return;
+          state.topics.unshift({ id: uid(), name: name, type: m.querySelector("#newType").value, opens: 0, notes: "", days: {} });
+          save(); closeModal(); render();
+        });
+      });
+  }
+
+  function openMenu(id) {
+    var t = getTopic(id);
+    if (!t) return;
+    openModal('<h3>' + esc(t.name) + '</h3><p class="msub">' + esc(t.type) + '</p><div class="menu-list">' +
+      '<button class="btn" data-m="notes">View notes</button><button class="btn" data-m="rename">Rename</button>' +
+      '<label class="lbl" for="mType" style="margin:6px 0 0">Type of study</label><select id="mType">' + typeOptions(t.type) + '</select>' +
+      '<button class="btn danger" data-m="delete">Delete topic</button><button class="btn" data-m="close">Close</button></div>',
+      function (m) {
+        m.querySelector("#mType").addEventListener("change", function (e) { t.type = e.target.value; save(); closeModal(); render(); });
+        m.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-m]");
+          if (!b) return;
+          var a = b.getAttribute("data-m");
+          if (a === "close") closeModal();
+          if (a === "notes") { closeModal(); openTopic(id); }
+          if (a === "rename") { closeModal(); renameTopic(id); }
+          if (a === "delete") { closeModal(); deleteTopic(id); }
+        });
+      });
+  }
+
+  function renameTopic(id) {
+    var t = getTopic(id);
+    var n = prompt("Rename topic", t.name);
+    if (n && n.trim()) { t.name = n.trim().slice(0, 80); save(); render(); }
+  }
+  function deleteTopic(id) {
+    var t = getTopic(id);
+    if (confirm('Delete "' + t.name + '" with all its days and notes? This cannot be undone.')) {
+      state.topics = state.topics.filter(function (x) { return x.id !== id; });
+      save();
+      if (view.topicId === id) { view.topicId = null; draw(); window.scrollTo(0, 0); }
+      else render();
+    }
+  }
+
+  function openDay(id, date) {
+    var t = getTopic(id);
+    if (!t) return;
+    var ex = t.days[date];
+    var st = { depth: ex ? ex.depth : 0, count: ex ? ex.count : 1 };
+    var html = '<h3>' + esc(fullDate(date)) + '</h3><p class="msub">' + esc(t.name) + ' · ' + esc(t.type) + '</p>' +
+      '<div class="lbl" style="margin-top:0">How deep did you go?</div><div class="depth-btns">' +
+      [1, 2, 3, 4].map(function (n) {
+        return '<button type="button" class="dbtn c' + n + (st.depth === n ? " on" : "") + '" data-d="' + n + '">' + DEPTHS[n].name + '</button>';
+      }).join("") + '</div>' +
+      '<div class="stepper"><span>Study sessions this day</span><div>' +
+      '<button type="button" data-step="-1" aria-label="Fewer sessions">−</button><b id="cnt">' + st.count + '</b>' +
+      '<button type="button" data-step="1" aria-label="More sessions">+</button></div></div>' +
+      '<label class="lbl" for="dayNote">Notes for this day</label>' +
+      '<textarea id="dayNote" placeholder="- What did you learn or do?">' + esc(ex ? ex.note : "") + '</textarea>' +
+      '<div class="err" id="err" role="alert"></div>' +
+      '<div class="actions">' + (ex ? '<button type="button" class="btn danger" data-do="clear">Clear day</button>' : "") +
+      '<span class="grow"></span><button type="button" class="btn" data-do="cancel">Cancel</button>' +
+      '<button type="button" class="btn primary" data-do="save">Save</button></div>';
+
+    openModal(html, function (m) {
+      m.addEventListener("click", function (e) {
+        var d = e.target.closest("[data-d]");
+        if (d) {
+          st.depth = +d.getAttribute("data-d");
+          Array.prototype.forEach.call(m.querySelectorAll("[data-d]"), function (b) {
+            b.classList.toggle("on", +b.getAttribute("data-d") === st.depth);
+          });
+          m.querySelector("#err").textContent = "";
+          return;
+        }
+        var s = e.target.closest("[data-step]");
+        if (s) {
+          st.count = Math.max(1, st.count + +s.getAttribute("data-step"));
+          m.querySelector("#cnt").textContent = st.count;
+          return;
+        }
+        var a = e.target.closest("[data-do]");
+        if (!a) return;
+        var act = a.getAttribute("data-do");
+        if (act === "cancel") closeModal();
+        if (act === "clear") {
+          if (confirm("Clear this day, including its notes?")) { delete t.days[date]; save(); closeModal(); render(); }
+        }
+        if (act === "save") {
+          if (!st.depth) { m.querySelector("#err").textContent = "Pick how deep you went first."; return; }
+          t.days[date] = { depth: st.depth, count: st.count, note: m.querySelector("#dayNote").value.replace(/\s+$/, "") };
+          save(); closeModal(); render();
+        }
+      });
+    });
+  }
+
+  /* ---------- navigation ---------- */
   function openTopic(id) {
     var t = getTopic(id);
     if (!t) return;
+    var b = document.getElementById("board");
+    view.savedX = b ? b.scrollLeft : 0;
+    view.savedY = window.scrollY;
     t.opens += 1;
     save();
-    view.id = id;
-    view.date = today();
-    var n = new Date();
-    view.year = n.getFullYear();
-    view.month = n.getMonth();
-    renderTopic();
+    view.topicId = id;
+    draw();
     window.scrollTo(0, 0);
   }
-
-  function renderTopic() {
-    var t = getTopic(view.id);
-    if (!t) { view.id = null; return renderHome(); }
-    var p = mastery(t);
-    var html = "";
-
-    html += '<button class="btn ghost back" id="backBtn">← All topics</button>';
-    html += '<div class="topic-head"><h1>' + esc(t.name) + '</h1>' +
-            '<div class="row"><select id="typeSel" aria-label="Type of study">' +
-            TYPES.map(function (x) { return "<option" + (x === t.type ? " selected" : "") + ">" + x + "</option>"; }).join("") +
-            '</select><button class="btn ghost small" id="renameBtn">Rename</button>' +
-            '<button class="btn danger small" id="delBtn">Delete</button></div></div>';
-
-    html += '<div class="stats">' +
-      '<div class="stat"><b>' + p + '%</b><span>Mastery · ' + masteryLabel(p) + '</span>' +
-        '<div class="bar" style="margin-top:8px"><i style="width:' + p + '%;background:' + masteryColor(p) + '"></i></div></div>' +
-      '<div class="stat"><b>' + t.opens + '</b><span>Times opened</span></div>' +
-      '<div class="stat"><b>' + timesStudied(t) + '</b><span>Times studied</span></div>' +
-      '<div class="stat"><b>' + daysStudied(t) + '</b><span>Days studied</span></div>' +
-      '<div class="stat"><b>' + esc(t.type) + '</b><span>Type of study</span></div>' +
-      '</div>';
-
-    // calendar
-    var first = new Date(view.year, view.month, 1);
-    var monthName = first.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-    var daysInMonth = new Date(view.year, view.month + 1, 0).getDate();
-    var lead = first.getDay();
-    var tdy = today();
-
-    html += '<div class="panel section"><h2>Days studied</h2>' +
-      '<div class="cal-nav"><button class="btn ghost small" id="prevM" aria-label="Previous month">‹ Prev</button>' +
-      '<strong>' + monthName + '</strong>' +
-      '<button class="btn ghost small" id="nextM" aria-label="Next month">Next ›</button></div>' +
-      '<div class="cal">';
-    ["S", "M", "T", "W", "T", "F", "S"].forEach(function (d) { html += '<div class="dow">' + d + "</div>"; });
-    for (var i = 0; i < lead; i++) html += '<div class="day pad"></div>';
-    for (var d = 1; d <= daysInMonth; d++) {
-      var s = view.year + "-" + pad(view.month + 1) + "-" + pad(d);
-      var e = t.days[s];
-      var cls = "day";
-      if (e) cls += " has c" + e.depth;
-      if (s === tdy) cls += " today";
-      if (s === view.date) cls += " sel";
-      if (s > tdy) cls += " future";
-      var label = nice(s) + (e ? ", " + DEPTHS[e.depth].name + " depth" : ", not studied");
-      html += '<button class="' + cls + '" data-date="' + s + '" aria-label="' + esc(label) + '">' + d +
-              (e && e.count > 1 ? "<sup>" + e.count + "</sup>" : "") + "</button>";
-    }
-    html += '</div>' +
-      '<div class="legend"><span><i></i>Not studied</span>' +
-      '<span><i class="c1"></i>Low</span><span><i class="c2"></i>Moderate</span>' +
-      '<span><i class="c3"></i>High</span><span><i class="c4"></i>Higher</span></div></div>';
-
-    // log panel
-    var cur = t.days[view.date];
-    html += '<div class="panel section"><h2>Log study: ' + esc(nice(view.date)) + '</h2>' +
-      '<div class="row"><label for="dateIn" class="hint" style="margin:0">Pick a different day</label>' +
-      '<input type="date" id="dateIn" value="' + view.date + '" max="' + tdy + '"></div>' +
-      '<p class="hint">How deep did you go? Tap a level to log it. Logging again on the same day counts as another study session and sets that day\'s depth to your latest pick.</p>' +
-      '<div class="depth-btns">' +
-      [1, 2, 3, 4].map(function (n) {
-        return '<button class="c' + n + (cur && cur.depth === n ? " on" : "") + '" data-depth="' + n + '">' +
-               DEPTHS[n].name + '</button>';
-      }).join("") + '</div>' +
-      (cur ? '<p class="hint">Logged: ' + DEPTHS[cur.depth].name + ' depth, ' + cur.count + ' session' + (cur.count === 1 ? "" : "s") +
-             '. <button class="btn ghost small" id="clearDay">Clear this day</button></p>' : "") +
-      '<p class="hint">Mastery adds up from each day\'s depth: Low = 2 points, Moderate = 5, High = 9, Higher = 14. Deeper days move it much faster, and gains slow down as you approach 100%.</p>' +
-      '</div>';
-
-    // notes
-    html += '<div class="panel section"><h2>Notes</h2>' +
-      '<textarea id="notes" placeholder="Write what you learned, questions, ideas, sources...">' + esc(t.notes) + '</textarea>' +
-      '<div class="saved" id="savedMsg" aria-live="polite"></div></div>';
-
-    app.innerHTML = html;
-    bindTopic(t);
-  }
-
-  var noteTimer = null;
-  function bindTopic(t) {
-    document.getElementById("backBtn").addEventListener("click", function () { view.id = null; renderHome(); });
-    document.getElementById("typeSel").addEventListener("change", function (e) {
-      t.type = e.target.value; save(); renderTopic();
-    });
-    document.getElementById("renameBtn").addEventListener("click", function () {
-      var n = prompt("Rename topic", t.name);
-      if (n && n.trim()) { t.name = n.trim().slice(0, 80); save(); renderTopic(); }
-    });
-    document.getElementById("delBtn").addEventListener("click", function () {
-      if (confirm('Delete "' + t.name + '" and all its notes and study days? This cannot be undone.')) {
-        state.topics = state.topics.filter(function (x) { return x.id !== t.id; });
-        save(); view.id = null; renderHome();
-      }
-    });
-    document.getElementById("prevM").addEventListener("click", function () { shiftMonth(-1); });
-    document.getElementById("nextM").addEventListener("click", function () { shiftMonth(1); });
-    Array.prototype.forEach.call(document.querySelectorAll("[data-date]"), function (el) {
-      el.addEventListener("click", function () { view.date = el.getAttribute("data-date"); renderTopic(); });
-    });
-    document.getElementById("dateIn").addEventListener("change", function (e) {
-      var v = e.target.value;
-      if (!v || v > today()) return;
-      view.date = v;
-      var d = parse(v);
-      view.year = d.getFullYear(); view.month = d.getMonth();
-      renderTopic();
-    });
-    Array.prototype.forEach.call(document.querySelectorAll("[data-depth]"), function (el) {
-      el.addEventListener("click", function () {
-        var depth = +el.getAttribute("data-depth");
-        var e = t.days[view.date];
-        t.days[view.date] = { depth: depth, count: e ? (e.count || 1) + 1 : 1 };
-        save(); renderTopic();
-      });
-    });
-    var clear = document.getElementById("clearDay");
-    if (clear) clear.addEventListener("click", function () {
-      delete t.days[view.date]; save(); renderTopic();
-    });
-    document.getElementById("notes").addEventListener("input", function (e) {
-      t.notes = e.target.value;
-      var msg = document.getElementById("savedMsg");
-      msg.textContent = "Saving…";
-      clearTimeout(noteTimer);
-      noteTimer = setTimeout(function () {
-        msg.textContent = save() ? "Saved" : "Could not save. Browser storage may be blocked.";
-      }, 400);
-    });
-  }
-
-  function shiftMonth(delta) {
-    view.month += delta;
-    if (view.month < 0) { view.month = 11; view.year--; }
-    if (view.month > 11) { view.month = 0; view.year++; }
-    renderTopic();
+  function backToBoard() {
+    view.topicId = null;
+    draw();
+    var b = document.getElementById("board");
+    if (b) b.scrollLeft = view.savedX;
+    window.scrollTo(0, view.savedY);
   }
 
   /* ---------- backup ---------- */
@@ -468,26 +597,63 @@
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
   }
-  function importData(e) {
-    var f = e.target.files[0];
-    if (!f) return;
+  function importData(file) {
     var r = new FileReader();
     r.onload = function () {
       try {
         var data = JSON.parse(r.result);
         if (!data || !Array.isArray(data.topics)) throw new Error("bad file");
         if (confirm("Replace your current topics with this backup?")) {
-          state = data; save(); renderHome();
+          state = data; normalize(); save(); view.topicId = null; draw();
         }
       } catch (err) { alert("That file isn't a valid Study Tracker backup."); }
     };
-    r.readAsText(f);
+    r.readAsText(file);
   }
 
+  /* ---------- events ---------- */
+  app.addEventListener("click", function (e) {
+    var t = e.target;
+    var el = t.closest("[data-cell]");
+    if (el) { var p = el.getAttribute("data-cell").split("|"); openDay(p[0], p[1]); return; }
+    el = t.closest("[data-topic]");
+    if (el) { openTopic(el.getAttribute("data-topic")); return; }
+    el = t.closest("[data-menu]");
+    if (el) { openMenu(el.getAttribute("data-menu")); return; }
+    el = t.closest("[data-edit]");
+    if (el) { openDay(view.topicId, el.getAttribute("data-edit")); return; }
+    el = t.closest("[data-act]");
+    if (!el) return;
+    var a = el.getAttribute("data-act");
+    if (a === "add") openAdd();
+    else if (a === "more") { view.extra += 30; render(); }
+    else if (a === "back") backToBoard();
+    else if (a === "sort") { view.asc = !view.asc; render(); }
+    else if (a === "rename") renameTopic(view.topicId);
+    else if (a === "delete") deleteTopic(view.topicId);
+    else if (a === "export") exportData();
+    else if (a === "import") document.getElementById("importFile").click();
+  });
+  app.addEventListener("change", function (e) {
+    if (e.target.id === "typeSel") {
+      var tp = getTopic(view.topicId);
+      tp.type = e.target.value; save(); render();
+    }
+    if (e.target.id === "importFile" && e.target.files[0]) importData(e.target.files[0]);
+  });
+  var legacyTimer = null;
+  app.addEventListener("input", function (e) {
+    if (e.target.id === "legacyNotes") {
+      var tp = getTopic(view.topicId);
+      tp.notes = e.target.value;
+      clearTimeout(legacyTimer);
+      legacyTimer = setTimeout(save, 400);
+    }
+  });
+
   /* ---------- start ---------- */
-  var app = document.getElementById("app");
   load();
-  renderHome();
+  draw();
 })();
 </script>
 </body>
