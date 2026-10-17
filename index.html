@@ -25,7 +25,7 @@
     --empty: color-mix(in srgb, var(--bg), #fff 3%);
     --empty-line: color-mix(in srgb, var(--bg), #fff 9%);
 
-    /* depth scale: red, orange, green, dark green (tuned to the theme) */
+    /* depth scale: red, orange, green, dark green (changeable in Customize) */
     --d1: #94332f;
     --d2: #a96d22;
     --d3: #4f7a3f;
@@ -88,7 +88,7 @@
   }
   .btn:hover { border-color: var(--brass); color: var(--brass); }
   .btn.primary { background: color-mix(in srgb, var(--brass) 14%, transparent); border-color: var(--brass); color: var(--brass); font-weight: 500; }
-  .btn.primary:hover { background: var(--brass); color: #120e07; }
+  .btn.primary:hover { background: var(--brass); color: var(--bg); }
   .btn.danger { color: #d0605a; }
   .btn.danger:hover { border-color: #d0605a; color: #e8837d; }
   :root[data-tone="light"] .btn.danger { color: #a3342f; }
@@ -102,6 +102,16 @@
   ::placeholder { color: var(--faint); }
   input[type=range] { accent-color: var(--brass); }
   input[type=color] { width: 52px; height: 36px; padding: 2px; background: var(--empty); border: 1px solid var(--line-2); border-radius: 6px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    background: var(--empty); border: 1px solid var(--line-2); color: var(--text);
+    border-radius: 99px; padding: 7px 14px; font-size: .78rem;
+  }
+  .chip:hover { border-color: var(--brass); color: var(--brass); }
+  .chip.on { background: color-mix(in srgb, var(--brass) 18%, transparent); border-color: var(--brass); color: var(--brass); font-weight: 500; }
+  .chip.add { border-style: dashed; color: var(--muted); }
+  .chip .n { opacity: .65; margin-left: 8px; font-size: .72rem; }
 
   /* ---------- profile ---------- */
   .banner {
@@ -152,14 +162,14 @@
   .c3 { background-color: var(--d3); }
   .c4 { background-color: var(--d4); }
 
-  .m1 { --rc: #d0605a; --band: #94332f; }
-  .m2 { --rc: #dba24a; --band: #a96d22; }
-  .m3 { --rc: #93bd70; --band: #4f7a3f; }
-  .m4 { --rc: #5fb98c; --band: #1f4a35; }
-  :root[data-tone="light"] .m1 { --rc: #a3342f; }
-  :root[data-tone="light"] .m2 { --rc: #96601a; }
-  :root[data-tone="light"] .m3 { --rc: #4f7a3f; }
-  :root[data-tone="light"] .m4 { --rc: #1f6a46; }
+  .m1 { --band: var(--d1); --rc: color-mix(in srgb, var(--d1), #fff 40%); }
+  .m2 { --band: var(--d2); --rc: color-mix(in srgb, var(--d2), #fff 38%); }
+  .m3 { --band: var(--d3); --rc: color-mix(in srgb, var(--d3), #fff 42%); }
+  .m4 { --band: var(--d4); --rc: color-mix(in srgb, var(--d4), #fff 55%); }
+  :root[data-tone="light"] .m1 { --rc: var(--d1); }
+  :root[data-tone="light"] .m2 { --rc: var(--d2); }
+  :root[data-tone="light"] .m3 { --rc: var(--d3); }
+  :root[data-tone="light"] .m4 { --rc: var(--d4); }
 
   /* ---------- board: topic names on the left, days scroll on the right ---------- */
   .boardwrap { display: flex; gap: 8px; align-items: flex-start; }
@@ -202,13 +212,32 @@
   .cell.none:hover { border-color: var(--brass-dim); color: var(--text); }
   .cell.today { box-shadow: inset 0 0 0 2px var(--brass), var(--bevel); }
   .cell.none.today { box-shadow: inset 0 0 0 2px var(--brass-dim); color: var(--brass); }
-  .note-dot { position: absolute; top: 7px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: #f1c277; box-shadow: 0 0 6px #f1c277; }
+  .note-dot { position: absolute; top: 7px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: color-mix(in srgb, var(--brass), #fff 35%); box-shadow: 0 0 6px var(--brass); }
 
   .more { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; color: var(--muted); font-size: .74rem; }
   .empty-state { text-align: center; color: var(--muted); padding: 56px 16px; border: 1px dashed var(--line-2); border-radius: 12px; }
   .empty-state p { margin-bottom: 16px; }
   .empty-state p:last-child { margin-bottom: 0; }
   footer { margin-top: 34px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; color: var(--faint); font-size: .74rem; }
+
+  /* ---------- categories ---------- */
+  .cats { margin-top: 38px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .ch { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; margin-bottom: 12px; }
+  .catpanel { margin-top: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .cphead { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .cphead h3 { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
+  .cpact { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+  .tcard {
+    display: flex; align-items: center; gap: 10px; text-align: left; min-width: 0;
+    background: var(--empty); border: 1px solid var(--line); border-left: 3px solid var(--band); border-radius: 8px;
+    padding: 10px; color: var(--text);
+  }
+  .tcard:hover { border-color: var(--brass); }
+  .tcard .txt { min-width: 0; display: flex; flex-direction: column; }
+  .tcard .nm { font-family: var(--serif); font-weight: 700; font-size: 1.1rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tcard small { font-size: .68rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tcard small.type { color: var(--mauve); }
 
   /* ---------- topic view ---------- */
   .back { margin-bottom: 18px; }
@@ -221,6 +250,7 @@
   .row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .typebox { display: flex; align-items: center; gap: 8px; font-size: .74rem; color: var(--muted); }
   .typebox input { width: 170px; font-size: .8rem; padding: 7px 9px; }
+  .catrow { margin-top: 20px; }
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 22px 0 6px; }
   .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
   .stat span { color: var(--muted); font-size: .72rem; display: block; }
@@ -267,6 +297,7 @@
   .modal h3 { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
   .msub { color: var(--muted); margin: 3px 0 14px; font-size: .78rem; }
   .lbl { display: block; font-size: .74rem; color: var(--muted); margin: 16px 0 6px; }
+  .sh { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; margin: 24px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
   .depth-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .dbtn {
     border: 0; border-radius: 7px; padding: 10px 4px; color: #f3efe0; font-size: .74rem; font-weight: 500;
@@ -308,14 +339,19 @@
   .swi { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: .66rem; color: var(--muted); }
   .sw { width: 100%; height: 38px; border-radius: 8px; border: 2px solid var(--line-2); }
   .sw.on { border-color: var(--brass); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--brass); }
+  .cgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
+  .cin { display: flex; flex-direction: column; gap: 4px; font-size: .7rem; color: var(--muted); }
+  .cin input { width: 100%; }
   .pts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .pts label { display: flex; flex-direction: column; gap: 4px; font-size: .7rem; color: var(--muted); }
   .pts input { width: 100%; text-align: center; padding: 8px 4px; }
+  .fprev { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--empty); font-size: .95rem; }
 
   @media (max-width: 560px) {
     :root { --label-w: 160px; --cell-w: 100px; }
     .label .counts { display: none; }
     .depth-btns { grid-template-columns: repeat(2, 1fr); }
+    .cgrid { grid-template-columns: repeat(2, 1fr); }
     .pname { font-size: 1.6rem; }
     .thead h1 { font-size: 1.8rem; }
   }
@@ -335,34 +371,70 @@
   var PREFS_KEY = "study-tracker-prefs-v1";
   var TYPE_SUGGESTIONS = ["Research", "Experiment", "Practice", "Reading", "Review", "Memorization", "Writing", "Discussion"];
   var NAMES = { 1: "Low", 2: "Moderate", 3: "High", 4: "Higher" };
-  var DEFAULT_PREFS = { color: "#090b0a", image: "", dim: 55, points: { 1: 5, 2: 10, 3: 20, 4: 30 } };
+  var DEFAULT_PREFS = {
+    color: "#090b0a", image: "", dim: 55,
+    points: { 1: 5, 2: 10, 3: 20, 4: 30 },
+    text: "", accent: "",
+    depth: { 1: "#94332f", 2: "#a96d22", 3: "#4f7a3f", 4: "#1f4a35" },
+    font: "original", customFont: ""
+  };
   var PRESETS = [
     { n: "Forest", c: "#090b0a" }, { n: "Midnight", c: "#090d17" }, { n: "Plum", c: "#130d15" }, { n: "Ash", c: "#131313" },
     { n: "Moss", c: "#0b150e" }, { n: "Oxblood", c: "#170a0a" }, { n: "Bone", c: "#e6e0cf" }, { n: "Fog", c: "#c5ccc6" }
   ];
+  var FONTS = [
+    { k: "original", n: "Original (mono and serif)", grp: 0 },
+    { k: "system", n: "System default", s: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif", grp: 0 },
+    { k: "arial", n: "Arial", s: "Arial, Helvetica, sans-serif", grp: 0 },
+    { k: "helvetica", n: "Helvetica", s: "'Helvetica Neue', Helvetica, Arial, sans-serif", grp: 0 },
+    { k: "verdana", n: "Verdana", s: "Verdana, Geneva, sans-serif", grp: 0 },
+    { k: "tahoma", n: "Tahoma", s: "Tahoma, Geneva, sans-serif", grp: 0 },
+    { k: "trebuchet", n: "Trebuchet MS", s: "'Trebuchet MS', sans-serif", grp: 0 },
+    { k: "georgia", n: "Georgia", s: "Georgia, serif", grp: 0 },
+    { k: "times", n: "Times New Roman", s: "'Times New Roman', Times, serif", grp: 0 },
+    { k: "palatino", n: "Palatino", s: "'Palatino Linotype', Palatino, 'Book Antiqua', serif", grp: 0 },
+    { k: "courier", n: "Courier New", s: "'Courier New', Courier, monospace", grp: 0 },
+    { k: "menlo", n: "Menlo", s: "Menlo, Monaco, Consolas, monospace", grp: 0 },
+    { k: "g-inter", n: "Inter", g: "Inter", s: "'Inter', system-ui, sans-serif", grp: 1 },
+    { k: "g-poppins", n: "Poppins", g: "Poppins", s: "'Poppins', system-ui, sans-serif", grp: 1 },
+    { k: "g-roboto", n: "Roboto", g: "Roboto", s: "'Roboto', system-ui, sans-serif", grp: 1 },
+    { k: "g-opensans", n: "Open Sans", g: "Open Sans", s: "'Open Sans', system-ui, sans-serif", grp: 1 },
+    { k: "g-montserrat", n: "Montserrat", g: "Montserrat", s: "'Montserrat', system-ui, sans-serif", grp: 1 },
+    { k: "g-nunito", n: "Nunito", g: "Nunito", s: "'Nunito', system-ui, sans-serif", grp: 1 },
+    { k: "g-raleway", n: "Raleway", g: "Raleway", s: "'Raleway', system-ui, sans-serif", grp: 1 },
+    { k: "g-lora", n: "Lora", g: "Lora", s: "'Lora', Georgia, serif", grp: 1 },
+    { k: "g-playfair", n: "Playfair Display", g: "Playfair Display", s: "'Playfair Display', Georgia, serif", grp: 1 },
+    { k: "g-merriweather", n: "Merriweather", g: "Merriweather", s: "'Merriweather', Georgia, serif", grp: 1 },
+    { k: "g-firacode", n: "Fira Code", g: "Fira Code", s: "'Fira Code', Menlo, monospace", grp: 1 },
+    { k: "g-spacemono", n: "Space Mono", g: "Space Mono", s: "'Space Mono', Menlo, monospace", grp: 1 }
+  ];
+  var FONT_MAP = {};
+  FONTS.forEach(function (f) { FONT_MAP[f.k] = f; });
 
   /* ---------- state ---------- */
-  var state = { topics: [] };
+  var state = { topics: [], cats: [] };
   var profile = { name: "", bio: "", avatar: "", header: "" };
   var prefs = clone(DEFAULT_PREFS);
-  var view = { topicId: null, extra: 0, asc: true, savedX: 0, savedY: 0, query: "" };
+  var view = { topicId: null, extra: 0, asc: true, savedX: 0, savedY: 0, query: "", cat: null };
   var app = document.getElementById("app");
-  var modalEl = null, modalOnClose = null;
+  var modalEl = null, modalOnClose = null, loadedFont = "";
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
   function load() {
-    try { var raw = localStorage.getItem(STORE_KEY); if (raw) state = JSON.parse(raw); } catch (e) { state = { topics: [] }; }
+    try { var raw = localStorage.getItem(STORE_KEY); if (raw) state = JSON.parse(raw); } catch (e) { state = { topics: [], cats: [] }; }
     normalize();
     try { var p = localStorage.getItem(PROFILE_KEY); if (p) profile = JSON.parse(p); } catch (e) { /* defaults */ }
     normalizeProfile();
     try { var q = localStorage.getItem(PREFS_KEY); if (q) prefs = JSON.parse(q); } catch (e) { prefs = clone(DEFAULT_PREFS); }
     prefs = cleanPrefs(prefs);
   }
+  var HEX = /^#[0-9a-f]{6}$/i;
+  function cleanFontName(s) { return String(s || "").replace(/[^A-Za-z0-9 .\-]/g, "").replace(/\s+/g, " ").trim().slice(0, 40); }
   function cleanPrefs(p) {
     var out = clone(DEFAULT_PREFS);
     if (p && typeof p === "object") {
-      if (typeof p.color === "string" && /^#[0-9a-f]{6}$/i.test(p.color)) out.color = p.color.toLowerCase();
+      if (typeof p.color === "string" && HEX.test(p.color)) out.color = p.color.toLowerCase();
       if (typeof p.image === "string" && p.image.indexOf("data:image/") === 0) out.image = p.image;
       var dim = +p.dim;
       if (dim >= 0 && dim <= 90) out.dim = Math.round(dim);
@@ -372,6 +444,13 @@
           if (v >= 1 && v <= 100) out.points[n] = v;
         });
       }
+      if (typeof p.text === "string" && HEX.test(p.text)) out.text = p.text.toLowerCase();
+      if (typeof p.accent === "string" && HEX.test(p.accent)) out.accent = p.accent.toLowerCase();
+      if (p.depth && typeof p.depth === "object") {
+        [1, 2, 3, 4].forEach(function (n) { if (typeof p.depth[n] === "string" && HEX.test(p.depth[n])) out.depth[n] = p.depth[n].toLowerCase(); });
+      }
+      if (typeof p.font === "string" && FONT_MAP[p.font]) out.font = p.font;
+      out.customFont = cleanFontName(p.customFont);
     }
     return out;
   }
@@ -382,13 +461,24 @@
     if (profile.header && profile.header.indexOf("data:image/") !== 0) profile.header = "";
   }
   function normalize() {
-    if (!state || !Array.isArray(state.topics)) state = { topics: [] };
+    if (!state || typeof state !== "object") state = {};
+    if (!Array.isArray(state.topics)) state.topics = [];
+    if (!Array.isArray(state.cats)) state.cats = [];
+    state.cats = state.cats
+      .filter(function (c) { return c && typeof c.name === "string" && c.name.trim(); })
+      .map(function (c) { return { id: c.id || uid(), name: c.name.trim().slice(0, 40) }; });
+    var ids = {};
+    state.cats.forEach(function (c) { ids[c.id] = 1; });
     state.topics.forEach(function (t) {
       t.id = t.id || uid();
       t.name = String(t.name || "Untitled");
       t.type = (typeof t.type === "string" && t.type.trim()) ? t.type.trim().slice(0, 30) : "General";
-      t.opens = +t.opens || 0;
       t.notes = typeof t.notes === "string" ? t.notes : "";
+      var seen = {};
+      t.cats = (Array.isArray(t.cats) ? t.cats : []).filter(function (id) {
+        if (!ids[id] || seen[id]) return false;
+        seen[id] = 1; return true;
+      });
       if (!t.days || typeof t.days !== "object") t.days = {};
       Object.keys(t.days).forEach(function (d) {
         var e = t.days[d];
@@ -400,7 +490,7 @@
     });
   }
   function save() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify({ topics: state.topics })); return true; } catch (e) { return false; }
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ topics: state.topics, cats: state.cats })); return true; } catch (e) { return false; }
   }
   function saveProfile() {
     try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); return true; } catch (e) { return false; }
@@ -409,7 +499,7 @@
     try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); return true; } catch (e) { return false; }
   }
 
-  /* ---------- background ---------- */
+  /* ---------- appearance: background, colors, font ---------- */
   function hexRgb(h) {
     return parseInt(h.slice(1, 3), 16) + "," + parseInt(h.slice(3, 5), 16) + "," + parseInt(h.slice(5, 7), 16);
   }
@@ -417,7 +507,10 @@
     var r = parseInt(h.slice(1, 3), 16), g = parseInt(h.slice(3, 5), 16), b = parseInt(h.slice(5, 7), 16);
     return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   }
-  function applyPrefs(p) {
+  function defText(bg) { return luminance(bg) > 0.55 ? "#1d221e" : "#dcd8c9"; }
+  function defAccent(bg) { return luminance(bg) > 0.55 ? "#84581b" : "#c99b55"; }
+
+  function applyBackground(p) {
     var root = document.documentElement;
     root.style.setProperty("--bg", p.color);
     root.setAttribute("data-tone", luminance(p.color) > 0.55 ? "light" : "dark");
@@ -429,6 +522,47 @@
       layer.style.backgroundImage = "none";
     }
   }
+  function applyColors(p) {
+    var root = document.documentElement;
+    [1, 2, 3, 4].forEach(function (n) { root.style.setProperty("--d" + n, p.depth[n]); });
+    if (p.text) {
+      root.style.setProperty("--text", p.text);
+      root.style.setProperty("--muted", "color-mix(in srgb, " + p.text + " 62%, var(--bg))");
+      root.style.setProperty("--faint", "color-mix(in srgb, " + p.text + " 40%, var(--bg))");
+    } else {
+      ["--text", "--muted", "--faint"].forEach(function (k) { root.style.removeProperty(k); });
+    }
+    if (p.accent) {
+      root.style.setProperty("--brass", p.accent);
+      root.style.setProperty("--brass-dim", "color-mix(in srgb, " + p.accent + " 45%, var(--bg))");
+    } else {
+      ["--brass", "--brass-dim"].forEach(function (k) { root.style.removeProperty(k); });
+    }
+  }
+  function applyFont(p) {
+    var root = document.documentElement;
+    var custom = cleanFontName(p.customFont), f = FONT_MAP[p.font], stack = null, gname = "", weights = false;
+    if (custom) { stack = '"' + custom + '", system-ui, sans-serif'; gname = custom; }
+    else if (f && f.s) { stack = f.s; if (f.g) { gname = f.g; weights = true; } }
+    if (!stack) {
+      root.style.removeProperty("--mono"); root.style.removeProperty("--serif");
+    } else {
+      root.style.setProperty("--mono", stack); root.style.setProperty("--serif", stack);
+    }
+    var key = gname + (weights ? "|w" : "");
+    if (key !== loadedFont) {
+      var old = document.getElementById("dynFont");
+      if (old) old.remove();
+      if (gname) {
+        var link = document.createElement("link");
+        link.id = "dynFont"; link.rel = "stylesheet";
+        link.href = "https://fonts.googleapis.com/css2?family=" + encodeURIComponent(gname).replace(/%20/g, "+") + (weights ? ":wght@400;700" : "") + "&display=swap";
+        document.head.appendChild(link);
+      }
+      loadedFont = key;
+    }
+  }
+  function applyPrefs(p) { applyBackground(p); applyColors(p); applyFont(p); }
 
   /* ---------- helpers ---------- */
   function pad(n) { return n < 10 ? "0" + n : "" + n; }
@@ -442,9 +576,27 @@
   }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function getTopic(id) { return state.topics.filter(function (t) { return t.id === id; })[0]; }
+  function getCat(id) { return state.cats.filter(function (c) { return c.id === id; })[0]; }
+  function catTopics(id) { return state.topics.filter(function (t) { return t.cats.indexOf(id) >= 0; }); }
   function yearOf(s) { return +s.slice(0, 4); }
   function thisYear() { return new Date().getFullYear(); }
   function plural(n, w) { return n + " " + w + (n === 1 ? "" : "s"); }
+
+  function addCat(name) {
+    name = String(name || "").trim().slice(0, 40);
+    if (!name) return null;
+    var ex = state.cats.filter(function (c) { return c.name.toLowerCase() === name.toLowerCase(); })[0];
+    if (ex) return ex;
+    var c = { id: uid(), name: name };
+    state.cats.push(c);
+    save();
+    return c;
+  }
+  function toggleTopicCat(t, catId) {
+    var i = t.cats.indexOf(catId);
+    if (i >= 0) t.cats.splice(i, 1); else t.cats.push(catId);
+    save();
+  }
 
   function cellLabel(s) {
     var d = parse(s);
@@ -501,18 +653,22 @@
     while (set[toStr(d)]) { n++; d.setDate(d.getDate() - 1); }
     return n;
   }
-  function typeList() {
+  function usedTypes() {
     var seen = {}, out = [];
     TYPE_SUGGESTIONS.concat(state.topics.map(function (t) { return t.type; })).forEach(function (x) {
       var k = x.toLowerCase();
       if (!seen[k]) { seen[k] = 1; out.push(x); }
     });
-    return '<datalist id="typeList">' + out.map(function (x) { return '<option value="' + esc(x) + '">'; }).join("") + "</datalist>";
+    return out;
+  }
+  function typeList() {
+    return '<datalist id="typeList">' + usedTypes().map(function (x) { return '<option value="' + esc(x) + '">'; }).join("") + "</datalist>";
   }
   function matches(t, q) {
     if (!q) return true;
     q = q.toLowerCase();
     if (t.name.toLowerCase().indexOf(q) >= 0 || t.type.toLowerCase().indexOf(q) >= 0) return true;
+    if (t.cats.some(function (id) { var c = getCat(id); return c && c.name.toLowerCase().indexOf(q) >= 0; })) return true;
     return Object.keys(t.days).some(function (d) { return t.days[d].note.toLowerCase().indexOf(q) >= 0; });
   }
 
@@ -522,7 +678,7 @@
       '<circle cx="' + h + '" cy="' + h + '" r="' + r + '" fill="none" style="stroke:var(--line-2)" stroke-width="' + sw + '"/>' +
       '<circle cx="' + h + '" cy="' + h + '" r="' + r + '" fill="none" style="stroke:var(--rc,#c99b55)" stroke-width="' + sw + '" stroke-linecap="round" ' +
       'stroke-dasharray="' + dash + ' ' + c.toFixed(2) + '" transform="rotate(-90 ' + h + ' ' + h + ')"/>' +
-      '<text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" style="fill:var(--text)" font-family="JetBrains Mono, monospace" font-size="' +
+      '<text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono)" font-size="' +
       (size * 0.25).toFixed(1) + '" font-weight="700">' + p + '%</text></svg>';
   }
 
@@ -598,6 +754,7 @@
       '<span><i class="c3"></i>high</span><span><i class="c4"></i>higher</span><span><i></i>empty</span></div></div>';
 
     html += '<div id="boardArea"></div>';
+    html += '<section class="cats" id="catArea"></section>';
 
     html += '<footer><span>saved in this browser</span>' +
             '<button class="btn small" data-act="export">export backup</button>' +
@@ -605,6 +762,7 @@
             '<input type="file" id="importFile" accept="application/json" hidden></footer>';
     app.innerHTML = html;
     fillBoard();
+    fillCats();
   }
 
   function fillBoard() {
@@ -629,7 +787,7 @@
           '<button class="open" data-topic="' + t.id + '" aria-label="Open notes for ' + esc(t.name) + '">' + ring(p, 38) +
           '<span class="txt"><span class="nm">' + esc(t.name) + '</span>' +
           '<small class="type">' + esc(t.type.toLowerCase()) + '</small>' +
-          '<small class="counts">' + plural(t.opens, "open") + ', ' + timesStudied(t) + ' studied</small></span></button>' +
+          '<small class="counts">' + timesStudied(t) + ' studied</small></span></button>' +
           '<button class="dots" data-menu="' + t.id + '" aria-label="Options for ' + esc(t.name) + '">⋮</button></div>';
         rows += '<div class="crow">';
         dates.forEach(function (s) {
@@ -655,6 +813,58 @@
     area.innerHTML = html;
   }
 
+  /* category section at the bottom of the board page */
+  function topicCard(t) {
+    var p = mastery(t);
+    return '<button class="tcard m' + band(p) + '" data-topic="' + t.id + '" aria-label="Open ' + esc(t.name) + '">' + ring(p, 44) +
+      '<span class="txt"><span class="nm">' + esc(t.name) + '</span><small class="type">' + esc(t.type.toLowerCase()) + '</small>' +
+      '<small>' + timesStudied(t) + ' studied, ' + plural(daysStudied(t), "day") + '</small></span></button>';
+  }
+  function fillCats() {
+    var area = document.getElementById("catArea");
+    if (!area) return;
+    var unsorted = state.topics.filter(function (t) { return !t.cats.length; });
+    if (view.cat && view.cat !== "_none" && !getCat(view.cat)) view.cat = null;
+
+    var html = '<h2 class="ch">Category</h2><div class="chips">';
+    state.cats.forEach(function (c) {
+      html += '<button class="chip' + (view.cat === c.id ? " on" : "") + '" data-cat="' + c.id + '">' + esc(c.name) +
+              '<span class="n">' + catTopics(c.id).length + '</span></button>';
+    });
+    if (state.cats.length && unsorted.length) {
+      html += '<button class="chip' + (view.cat === "_none" ? " on" : "") + '" data-cat="_none">unsorted<span class="n">' + unsorted.length + '</span></button>';
+    }
+    html += '<button class="chip add" data-act="addcat">add category</button></div>';
+
+    if (!state.cats.length) {
+      html += '<p class="hint" style="margin-top:10px">No categories yet. Add one, like Psychology or Science, then connect your topics to it.</p>';
+    }
+    if (view.cat === "_none") {
+      html += '<div class="catpanel"><div class="cphead"><h3>Unsorted</h3></div>' +
+              '<div class="tgrid">' + unsorted.map(topicCard).join("") + '</div></div>';
+    } else if (view.cat) {
+      var c = getCat(view.cat), list = catTopics(c.id);
+      html += '<div class="catpanel"><div class="cphead"><h3>' + esc(c.name) + '</h3><div class="cpact">' +
+        '<button class="btn small" data-act="catconnect">connect topics</button>' +
+        '<button class="btn small" data-act="catrename">rename</button>' +
+        '<button class="btn small danger" data-act="catdelete">delete</button></div></div>' +
+        (list.length ? '<div class="tgrid">' + list.map(topicCard).join("") + '</div>'
+                     : '<p class="hint">No topics here yet. Tap connect topics to add some.</p>') + '</div>';
+    }
+    area.innerHTML = html;
+  }
+
+  function topicCatRow(t) {
+    var chips = state.cats.length
+      ? state.cats.map(function (c) {
+          return '<button class="chip' + (t.cats.indexOf(c.id) >= 0 ? " on" : "") + '" data-tcat="' + c.id + '">' + esc(c.name) + '</button>';
+        }).join("")
+      : '<span class="hint">No categories yet. Type a name below to create one.</span>';
+    return '<div class="catrow"><div class="lbl" style="margin:0 0 8px">category, tap to connect this topic</div><div class="chips">' + chips + '</div>' +
+      '<div class="row2" style="margin-top:8px;max-width:360px"><input type="text" id="catNew" maxlength="40" placeholder="new category name" aria-label="New category name">' +
+      '<button class="btn small" data-act="catnew">add</button></div></div>';
+  }
+
   function drawTopic() {
     var t = getTopic(view.topicId), p = mastery(t);
     var keys = Object.keys(t.days).sort();
@@ -668,9 +878,10 @@
       '<div class="row-actions"><label class="typebox">study type<input type="text" id="typeIn" list="typeList" maxlength="30" value="' + esc(t.type) + '" aria-label="Type of study"></label>' +
       '<button class="btn small" data-act="rename">rename</button><button class="btn small danger" data-act="delete">delete</button></div></div>' + typeList();
 
+    html += topicCatRow(t);
+
     html += '<div class="stats">' +
       '<div class="stat"><span>mastery</span><b>' + p + '%</b></div>' +
-      '<div class="stat"><span>times opened</span><b>' + t.opens + '</b></div>' +
       '<div class="stat"><span>times studied</span><b>' + timesStudied(t) + '</b></div>' +
       '<div class="stat"><span>days studied</span><b>' + daysStudied(t) + '</b></div></div>';
 
@@ -727,21 +938,64 @@
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
 
   function openAdd() {
+    var sel = [];
     openModal("Add topic",
       '<h3>Add topic</h3><p class="msub">What do you want to study?</p>' +
       '<form id="addForm"><input type="text" id="newName" maxlength="80" placeholder="e.g. Stoic ethics" aria-label="Topic name" required>' +
-      '<label class="lbl" for="newType">type of study, write your own or pick one</label>' +
+      '<label class="lbl" for="newType">type of study, write your own or tap one</label>' +
       '<input type="text" id="newType" list="typeList" maxlength="30" placeholder="e.g. research, experiment, practice">' + typeList() +
+      '<div class="chips" id="typeChips" style="margin-top:6px">' +
+      usedTypes().map(function (x) { return '<button type="button" class="chip" data-tc="' + esc(x) + '">' + esc(x.toLowerCase()) + '</button>'; }).join("") + '</div>' +
+      '<div class="lbl">category, tap to connect (optional)</div><div class="chips" id="catChips"></div>' +
+      '<div class="row2" style="margin-top:8px"><input type="text" id="newCat" maxlength="40" placeholder="new category name" aria-label="New category name">' +
+      '<button type="button" class="btn small" data-do="addCat">add</button></div>' +
       '<div class="actions" style="margin-top:14px"><span class="grow"></span><button type="button" class="btn" data-do="cancel">cancel</button>' +
       '<button type="submit" class="btn primary">add topic</button></div></form>',
       function (m) {
-        m.querySelector("[data-do=cancel]").addEventListener("click", closeModal);
+        var chipsEl = m.querySelector("#catChips"), typeIn = m.querySelector("#newType");
+        function drawCatChips() {
+          chipsEl.innerHTML = state.cats.length
+            ? state.cats.map(function (c) {
+                return '<button type="button" class="chip' + (sel.indexOf(c.id) >= 0 ? " on" : "") + '" data-sc="' + c.id + '">' + esc(c.name) + '</button>';
+              }).join("")
+            : '<span class="hint">No categories yet. Add one below.</span>';
+        }
+        function markTypes() {
+          Array.prototype.forEach.call(m.querySelectorAll("[data-tc]"), function (b) {
+            b.classList.toggle("on", b.getAttribute("data-tc").toLowerCase() === typeIn.value.trim().toLowerCase());
+          });
+        }
+        function newCat() {
+          var inp = m.querySelector("#newCat"), c = addCat(inp.value);
+          if (!c) return;
+          if (sel.indexOf(c.id) < 0) sel.push(c.id);
+          inp.value = ""; drawCatChips();
+        }
+        drawCatChips();
+        typeIn.addEventListener("input", markTypes);
+        m.querySelector("#newCat").addEventListener("keydown", function (e) {
+          if (e.key === "Enter") { e.preventDefault(); newCat(); }
+        });
+        m.addEventListener("click", function (e) {
+          var tc = e.target.closest("[data-tc]");
+          if (tc) { typeIn.value = tc.getAttribute("data-tc"); markTypes(); return; }
+          var sc = e.target.closest("[data-sc]");
+          if (sc) {
+            var id = sc.getAttribute("data-sc"), i = sel.indexOf(id);
+            if (i >= 0) sel.splice(i, 1); else sel.push(id);
+            drawCatChips(); return;
+          }
+          var a = e.target.closest("[data-do]");
+          if (!a) return;
+          if (a.getAttribute("data-do") === "cancel") closeModal();
+          if (a.getAttribute("data-do") === "addCat") newCat();
+        });
         m.querySelector("#addForm").addEventListener("submit", function (e) {
           e.preventDefault();
           var name = m.querySelector("#newName").value.trim();
           if (!name) return;
-          var type = m.querySelector("#newType").value.trim().slice(0, 30) || "General";
-          state.topics.unshift({ id: uid(), name: name, type: type, opens: 0, notes: "", days: {} });
+          var type = typeIn.value.trim().slice(0, 30) || "General";
+          state.topics.unshift({ id: uid(), name: name, type: type, notes: "", cats: sel.slice(), days: {} });
           save(); closeModal(); render();
         });
       });
@@ -786,6 +1040,51 @@
       if (view.topicId === id) { view.topicId = null; draw(); window.scrollTo(0, 0); }
       else render();
     }
+  }
+
+  /* ---------- category actions ---------- */
+  function renameCat(id) {
+    var c = getCat(id);
+    if (!c) return;
+    var n = prompt("Rename category", c.name);
+    if (n && n.trim()) { c.name = n.trim().slice(0, 40); save(); render(); }
+  }
+  function deleteCat(id) {
+    var c = getCat(id);
+    if (!c) return;
+    if (confirm('Delete the category "' + c.name + '"? Your topics stay, they just leave this category.')) {
+      state.cats = state.cats.filter(function (x) { return x.id !== id; });
+      state.topics.forEach(function (t) { t.cats = t.cats.filter(function (x) { return x !== id; }); });
+      if (view.cat === id) view.cat = null;
+      save(); render();
+    }
+  }
+  function openConnect(id) {
+    var c = getCat(id);
+    if (!c) return;
+    var html = '<h3>' + esc(c.name) + '</h3><p class="msub">Tap the topics you want in this category.</p>' +
+      (state.topics.length ? '<div class="chips" id="connChips"></div>' : '<p class="hint">Add a topic first.</p>') +
+      '<div class="actions" style="margin-top:16px"><span class="grow"></span><button type="button" class="btn primary" data-do="done">done</button></div>';
+    openModal("Connect topics", html, function (m) {
+      var el = m.querySelector("#connChips");
+      function draw2() {
+        if (!el) return;
+        el.innerHTML = state.topics.map(function (t) {
+          return '<button type="button" class="chip' + (t.cats.indexOf(id) >= 0 ? " on" : "") + '" data-ct="' + t.id + '">' + esc(t.name) + '</button>';
+        }).join("");
+      }
+      draw2();
+      m.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-ct]");
+        if (b) {
+          var t = getTopic(b.getAttribute("data-ct"));
+          if (t) { toggleTopicCat(t, id); draw2(); fillCats(); }
+          return;
+        }
+        var a = e.target.closest("[data-do]");
+        if (a && a.getAttribute("data-do") === "done") closeModal();
+      });
+    });
   }
 
   function openDay(id, date) {
@@ -949,11 +1248,25 @@
     });
   }
 
-  /* ---------- customize: background and mastery ---------- */
+  /* ---------- customize: background, colors, font, mastery ---------- */
   function openCustomize() {
     var tmp = clone(prefs);
-    var html = '<h3>Customize</h3><p class="msub">Change the whole background and how fast mastery grows.</p>' +
-      '<div class="lbl" style="margin-top:0">background color</div><div class="sw-grid" id="swGrid">' +
+    var colorFields = [
+      { k: "text", n: "text" }, { k: "accent", n: "accent" },
+      { k: "1", n: "low" }, { k: "2", n: "moderate" }, { k: "3", n: "high" }, { k: "4", n: "higher" }
+    ];
+    function fontOptions() {
+      var g0 = "", g1 = "";
+      FONTS.forEach(function (f) {
+        var o = '<option value="' + f.k + '"' + (tmp.font === f.k ? " selected" : "") + '>' + esc(f.n) + '</option>';
+        if (f.grp === 0) g0 += o; else g1 += o;
+      });
+      return '<optgroup label="Built in">' + g0 + '</optgroup><optgroup label="Google Fonts (needs internet)">' + g1 + '</optgroup>';
+    }
+    var html = '<h3>Customize</h3><p class="msub">Change colors, font and background for the whole interface. You see changes right away, and they stay once you save.</p>' +
+
+      '<div class="sh" style="margin-top:0;border-top:0;padding-top:0">Background</div>' +
+      '<div class="lbl">background color</div><div class="sw-grid" id="swGrid">' +
       PRESETS.map(function (p) {
         return '<div class="swi"><button type="button" class="sw" data-c="' + p.c + '" style="background:' + p.c + '" aria-label="' + p.n + '"></button>' + p.n + '</div>';
       }).join("") + '</div>' +
@@ -963,23 +1276,46 @@
       '<button type="button" class="btn small" data-do="pickBg">upload image</button><button type="button" class="btn small" data-do="rmBg">remove image</button></div>' +
       '<div class="lbl">how much the color covers the image: <span id="dimVal">' + tmp.dim + '%</span></div>' +
       '<input type="range" id="dim" min="0" max="90" value="' + tmp.dim + '" style="width:100%">' +
-      '<div class="lbl" style="margin-top:20px">mastery added for a day studied at each depth (percent)</div><div class="pts">' +
+
+      '<div class="sh">Colors</div><p class="msub" style="margin:4px 0 0">Text and accent color, plus the four depth colors used on the board.</p>' +
+      '<div class="cgrid">' + colorFields.map(function (f) {
+        return '<label class="cin">' + f.n + '<input type="color" data-ck="' + f.k + '" value="#000000"></label>';
+      }).join("") + '</div>' +
+      '<div class="pp-btns" style="margin-top:10px"><button type="button" class="btn small" data-do="resetColors">reset colors</button></div>' +
+
+      '<div class="sh">Font</div>' +
+      '<label class="lbl" for="fontSel">choose a font for everything</label><select id="fontSel" style="width:100%">' + fontOptions() + '</select>' +
+      '<label class="lbl" for="fontCustom">or type any font name</label>' +
+      '<input type="text" id="fontCustom" maxlength="40" placeholder="e.g. Arial, Lora, Courier New" value="' + esc(tmp.customFont) + '" style="width:100%">' +
+      '<p class="hint">A typed name is used instead of the list. It works for fonts installed on your device and for Google Fonts.</p>' +
+      '<p class="fprev">The quick brown fox jumps over the lazy dog 0123456789</p>' +
+
+      '<div class="sh">Mastery</div><div class="lbl">percent added for a day studied at each depth</div><div class="pts">' +
       [1, 2, 3, 4].map(function (n) {
         return '<label>' + NAMES[n].toLowerCase() + '<input type="number" min="1" max="100" step="1" inputmode="numeric" data-p="' + n + '" value="' + tmp.points[n] + '"></label>';
       }).join("") + '</div>' +
       '<p class="hint">Mastery adds these up and stops at 100%.</p>' +
       '<input type="file" id="fBg" accept="image/*" hidden>' +
       '<div class="err" id="err" role="alert"></div>' +
-      '<div class="actions"><button type="button" class="btn danger" data-do="reset">reset</button><span class="grow"></span>' +
+      '<div class="actions"><button type="button" class="btn danger" data-do="reset">reset everything</button><span class="grow"></span>' +
       '<button type="button" class="btn" data-do="cancel">cancel</button><button type="button" class="btn primary" data-do="save">save</button></div>';
 
     openModal("Customize", html, function (m) {
       var err = m.querySelector("#err");
+      function colorValue(k) {
+        if (k === "text") return tmp.text || defText(tmp.color);
+        if (k === "accent") return tmp.accent || defAccent(tmp.color);
+        return tmp.depth[k];
+      }
+      function syncColors() {
+        Array.prototype.forEach.call(m.querySelectorAll("[data-ck]"), function (i) { i.value = colorValue(i.getAttribute("data-ck")); });
+      }
       function marks() {
         Array.prototype.forEach.call(m.querySelectorAll(".sw"), function (b) {
           b.classList.toggle("on", b.getAttribute("data-c") === tmp.color);
         });
         m.querySelector("#bgColor").value = tmp.color;
+        syncColors();
       }
       marks();
       m.querySelector("#swGrid").addEventListener("click", function (e) {
@@ -992,6 +1328,22 @@
       });
       m.querySelector("#dim").addEventListener("input", function (e) {
         tmp.dim = +e.target.value; m.querySelector("#dimVal").textContent = tmp.dim + "%"; applyPrefs(tmp);
+      });
+      Array.prototype.forEach.call(m.querySelectorAll("[data-ck]"), function (i) {
+        i.addEventListener("input", function (e) {
+          var k = e.target.getAttribute("data-ck"), v = e.target.value.toLowerCase();
+          if (k === "text") tmp.text = v; else if (k === "accent") tmp.accent = v; else tmp.depth[k] = v;
+          applyPrefs(tmp);
+        });
+      });
+      m.querySelector("#fontSel").addEventListener("change", function (e) {
+        tmp.font = e.target.value; tmp.customFont = ""; m.querySelector("#fontCustom").value = ""; applyPrefs(tmp);
+      });
+      var ft = null;
+      m.querySelector("#fontCustom").addEventListener("input", function (e) {
+        var v = e.target.value;
+        clearTimeout(ft);
+        ft = setTimeout(function () { tmp.customFont = cleanFontName(v); applyPrefs(tmp); }, 450);
       });
       m.querySelector("#fBg").addEventListener("change", function (e) {
         var f = e.target.files[0]; e.target.value = "";
@@ -1007,9 +1359,13 @@
         var act = a.getAttribute("data-do");
         if (act === "pickBg") m.querySelector("#fBg").click();
         if (act === "rmBg") { tmp.image = ""; applyPrefs(tmp); }
+        if (act === "resetColors") {
+          tmp.text = ""; tmp.accent = ""; tmp.depth = clone(DEFAULT_PREFS.depth); applyPrefs(tmp); syncColors();
+        }
         if (act === "reset") {
           tmp = clone(DEFAULT_PREFS); applyPrefs(tmp); marks();
           m.querySelector("#dim").value = tmp.dim; m.querySelector("#dimVal").textContent = tmp.dim + "%";
+          m.querySelector("#fontSel").value = tmp.font; m.querySelector("#fontCustom").value = "";
           Array.prototype.forEach.call(m.querySelectorAll("[data-p]"), function (i) { i.value = tmp.points[i.getAttribute("data-p")]; });
         }
         if (act === "cancel") closeModal();
@@ -1020,6 +1376,7 @@
             if (!(v >= 1 && v <= 100)) pointsOk = false; else tmp.points[i.getAttribute("data-p")] = v;
           });
           if (!pointsOk) { err.textContent = "Mastery amounts must be whole numbers from 1 to 100."; return; }
+          tmp.customFont = cleanFontName(m.querySelector("#fontCustom").value);
           var old = prefs;
           prefs = cleanPrefs(tmp);
           if (!savePrefs()) {
@@ -1030,7 +1387,7 @@
           closeModal(); render();
         }
       });
-    }, function () { applyPrefs(prefs); });   // closing without saving restores the saved background
+    }, function () { applyPrefs(prefs); });   // closing without saving restores what was saved
   }
 
   /* ---------- navigation ---------- */
@@ -1040,8 +1397,6 @@
     var b = document.getElementById("board");
     view.savedX = b ? b.scrollLeft : 0;
     view.savedY = window.scrollY;
-    t.opens += 1;
-    save();
     view.topicId = id;
     draw();
     window.scrollTo(0, 0);
@@ -1056,7 +1411,7 @@
 
   /* ---------- backup ---------- */
   function exportData() {
-    var blob = new Blob([JSON.stringify({ topics: state.topics, profile: profile, prefs: prefs }, null, 2)], { type: "application/json" });
+    var blob = new Blob([JSON.stringify({ topics: state.topics, cats: state.cats, profile: profile, prefs: prefs }, null, 2)], { type: "application/json" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "study-tracker-backup-" + today() + ".json";
@@ -1070,10 +1425,10 @@
         var data = JSON.parse(r.result);
         if (!data || !Array.isArray(data.topics)) throw new Error("bad file");
         if (confirm("Replace your current topics with this backup?")) {
-          state = { topics: data.topics }; normalize(); save();
+          state = { topics: data.topics, cats: Array.isArray(data.cats) ? data.cats : [] }; normalize(); save();
           if (data.profile && typeof data.profile === "object") { profile = data.profile; normalizeProfile(); saveProfile(); }
           if (data.prefs && typeof data.prefs === "object") { prefs = cleanPrefs(data.prefs); savePrefs(); applyPrefs(prefs); }
-          view.topicId = null; draw();
+          view.topicId = null; view.cat = null; draw();
         }
       } catch (err) { alert("That file isn't a valid Study Tracker backup."); }
     };
@@ -1081,6 +1436,15 @@
   }
 
   /* ---------- events ---------- */
+  function addCatFromTopicPage() {
+    var inp = document.getElementById("catNew");
+    var t = getTopic(view.topicId);
+    if (!inp || !t) return;
+    var c = addCat(inp.value);
+    if (!c) return;
+    if (t.cats.indexOf(c.id) < 0) t.cats.push(c.id);
+    save(); render();
+  }
   app.addEventListener("click", function (e) {
     var t = e.target;
     var el = t.closest("[data-cell]");
@@ -1091,6 +1455,10 @@
     if (el) { openMenu(el.getAttribute("data-menu")); return; }
     el = t.closest("[data-edit]");
     if (el) { openDay(view.topicId, el.getAttribute("data-edit")); return; }
+    el = t.closest("[data-cat]");
+    if (el) { var cid = el.getAttribute("data-cat"); view.cat = (view.cat === cid) ? null : cid; fillCats(); return; }
+    el = t.closest("[data-tcat]");
+    if (el) { var tp = getTopic(view.topicId); if (tp) { toggleTopicCat(tp, el.getAttribute("data-tcat")); render(); } return; }
     el = t.closest("[data-act]");
     if (!el) return;
     var a = el.getAttribute("data-act");
@@ -1104,6 +1472,18 @@
     else if (a === "delete") deleteTopic(view.topicId);
     else if (a === "export") exportData();
     else if (a === "import") document.getElementById("importFile").click();
+    else if (a === "addcat") {
+      var n = prompt("Name your category, like Psychology or Science");
+      var c = addCat(n);
+      if (c) { view.cat = c.id; render(); }
+    }
+    else if (a === "catrename") renameCat(view.cat);
+    else if (a === "catdelete") deleteCat(view.cat);
+    else if (a === "catconnect") openConnect(view.cat);
+    else if (a === "catnew") addCatFromTopicPage();
+  });
+  app.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && e.target.id === "catNew") { e.preventDefault(); addCatFromTopicPage(); }
   });
   app.addEventListener("change", function (e) {
     if (e.target.id === "typeIn") {
