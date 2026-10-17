@@ -93,7 +93,7 @@
   .btn.danger:hover { border-color: #d0605a; color: #e8837d; }
   :root[data-tone="light"] .btn.danger { color: #a3342f; }
   .btn.small { padding: 6px 10px; font-size: .74rem; }
-  select, input[type=text], input[type=search], input[type=number], textarea {
+  select, input[type=text], input[type=search], input[type=number], input[type=time], textarea {
     background: var(--empty); border: 1px solid var(--line-2); border-radius: 6px; padding: 9px 11px; color: var(--text); min-width: 0;
   }
   input[type=search] { -webkit-appearance: none; appearance: none; }
@@ -336,6 +336,49 @@
   .pts input { width: 100%; text-align: center; padding: 8px 4px; }
   .fprev { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--empty); font-size: .95rem; }
 
+  /* ---------- entries and rich notes ---------- */
+  .dayblock { margin-bottom: 18px; }
+  .dayh { font-family: var(--serif); font-size: 1.45rem; font-weight: 700; margin: 0 0 8px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .dayn { font-family: var(--mono); font-size: .7rem; font-weight: 400; color: var(--muted); }
+  .eh { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; min-width: 0; }
+  .etime { font-weight: 700; font-size: .92rem; }
+  .gap { color: var(--brass); font-size: .72rem; }
+  .elist { display: flex; flex-direction: column; gap: 10px; }
+  .eitem { background: var(--empty); border: 1px solid var(--line); border-left-width: 4px; border-radius: 8px; padding: 10px 12px; }
+  .eitem.b1 { border-left-color: var(--d1); }
+  .eitem.b2 { border-left-color: var(--d2); }
+  .eitem.b3 { border-left-color: var(--d3); }
+  .eitem.b4 { border-left-color: var(--d4); }
+  .epre { margin: 6px 0 0; color: var(--muted); font-size: .8rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+  .eact { display: flex; gap: 8px; margin-top: 8px; }
+
+  .rich, .rte { line-height: 1.7; font-size: .88rem; overflow-wrap: anywhere; }
+  .rich { margin-top: 10px; }
+  .rich > :first-child { margin-top: 0; }
+  .rich > :last-child { margin-bottom: 0; }
+  .rich p, .rich div, .rte p, .rte div { margin: 0 0 .5em; }
+  .rich h1, .rte h1 { font-family: var(--serif); font-size: 1.8rem; font-weight: 700; line-height: 1.2; margin: .5em 0 .3em; }
+  .rich h2, .rte h2 { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; line-height: 1.25; margin: .5em 0 .3em; }
+  .rich h3, .rte h3 { font-size: 1.02rem; font-weight: 700; line-height: 1.3; margin: .6em 0 .25em; color: var(--brass); }
+  .rich ul, .rich ol, .rte ul, .rte ol { margin: .3em 0 .6em; padding-left: 1.5em; }
+  .rich blockquote, .rte blockquote { margin: .5em 0; padding: .1em 0 .1em 12px; border-left: 3px solid var(--brass-dim); color: var(--muted); }
+  .rte {
+    min-height: 190px; max-height: 46vh; overflow: auto; padding: 12px; background: var(--empty);
+    border: 1px solid var(--line-2); border-radius: 6px; outline: none; position: relative;
+  }
+  .rte:focus { border-color: var(--brass); }
+  .rte[data-empty="1"]::before { content: attr(data-ph); color: var(--faint); position: absolute; pointer-events: none; }
+  .tb { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+  .tb button { background: var(--empty); border: 1px solid var(--line-2); border-radius: 6px; padding: 5px 9px; font-size: .72rem; color: var(--text); }
+  .tb button:hover { border-color: var(--brass); }
+  .tb button.on { border-color: var(--brass); color: var(--brass); }
+  .tb .tb-b { font-weight: 700; }
+  .tb .tb-i { font-style: italic; }
+  .tb .tb-u { text-decoration: underline; }
+  .tb .tb-s { text-decoration: line-through; }
+  .tb .tcol { width: 22px; height: 22px; padding: 0; border-radius: 50%; }
+  .tsep { width: 1px; height: 20px; background: var(--line-2); }
+
   @media (max-width: 560px) {
     :root { --label-w: 160px; --cell-w: 100px; }
     .label .counts { display: none; }
@@ -449,6 +492,82 @@
     if (profile.avatar && profile.avatar.indexOf("data:image/") !== 0) profile.avatar = "";
     if (profile.header && profile.header.indexOf("data:image/") !== 0) profile.header = "";
   }
+  /* ---------- rich text: keep only safe formatting ---------- */
+  var ALLOWED = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, S: 1, STRIKE: 1, DEL: 1, H1: 1, H2: 1, H3: 1, P: 1, DIV: 1, BR: 1, UL: 1, OL: 1, LI: 1, BLOCKQUOTE: 1, SPAN: 1, FONT: 1 };
+  var DROP = { SCRIPT: 1, STYLE: 1, IFRAME: 1, OBJECT: 1, EMBED: 1, NOSCRIPT: 1, TEMPLATE: 1 };
+  var CSS_COLOR = /^(#[0-9a-f]{3,8}|rgba?\(\s*[\d.]+%?\s*,\s*[\d.]+%?\s*,\s*[\d.]+%?\s*(,\s*[\d.]+\s*)?\))$/i;
+  function safeStyle(el) {
+    var out = [], color = el.style ? el.style.color : "", bg = el.style ? el.style.backgroundColor : "";
+    if (el.tagName === "FONT" && el.getAttribute("color")) color = el.getAttribute("color");
+    color = (color || "").trim(); bg = (bg || "").trim();
+    if (color && CSS_COLOR.test(color)) out.push("color:" + color);
+    if (bg && CSS_COLOR.test(bg)) out.push("background-color:" + bg);
+    return out.join(";");
+  }
+  function cleanNode(node) {
+    var out = "";
+    Array.prototype.forEach.call(node.childNodes, function (c) {
+      if (c.nodeType === 3) { out += esc(c.nodeValue); return; }
+      if (c.nodeType !== 1) return;
+      var tag = c.tagName;
+      if (DROP[tag]) return;
+      if (tag === "BR") { out += "<br>"; return; }
+      var inner = cleanNode(c);
+      if (!ALLOWED[tag]) { out += inner; return; }
+      if (tag === "SPAN" || tag === "FONT") {
+        var st = safeStyle(c);
+        out += st ? '<span style="' + st + '">' + inner + "</span>" : inner;
+        return;
+      }
+      var t = tag === "STRONG" ? "b" : tag === "EM" ? "i" : (tag === "STRIKE" || tag === "DEL") ? "s" : tag.toLowerCase();
+      out += "<" + t + ">" + inner + "</" + t + ">";
+    });
+    return out;
+  }
+  function sanitize(html) {
+    var doc = new DOMParser().parseFromString("<body>" + String(html || "") + "</body>", "text/html");
+    return cleanNode(doc.body).trim();
+  }
+  function plainText(html) {
+    var spaced = String(html || "").replace(/<\/(p|div|h[1-3]|li|blockquote)>|<br\s*\/?>/gi, " $&");
+    var doc = new DOMParser().parseFromString("<body>" + spaced + "</body>", "text/html");
+    return (doc.body.textContent || "").replace(/\s+/g, " ").trim();
+  }
+  function legacyToHtml(text) {
+    return String(text).split(/\r?\n/).map(function (l) { return "<p>" + (l.trim() ? esc(l) : "<br>") + "</p>"; }).join("");
+  }
+
+  /* ---------- entries and their times ---------- */
+  function sortEntries(a) {
+    return a.map(function (x, i) { return { x: x, i: i }; }).sort(function (p, q) {
+      var tp = p.x.time, tq = q.x.time;
+      if (tp === tq) return p.i - q.i;
+      if (!tp) return -1;
+      if (!tq) return 1;
+      return tp < tq ? -1 : 1;
+    }).map(function (o) { return o.x; });
+  }
+  function mins(t) { return (+t.slice(0, 2)) * 60 + (+t.slice(3, 5)); }
+  function fmtTime(t) {
+    return new Date(2000, 0, 1, +t.slice(0, 2), +t.slice(3, 5)).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  }
+  function fmtGap(m) {
+    var h = Math.floor(m / 60), r = m % 60, out = [];
+    if (h) out.push(h + "h");
+    if (r) out.push(r + "m");
+    return out.join(" ");
+  }
+  function gapText(entries, i) {
+    var cur = entries[i], prev = null;
+    if (!cur.time) return "";
+    for (var k = i - 1; k >= 0; k--) { if (entries[k].time) { prev = entries[k]; break; } }
+    if (!prev) return "";
+    var diff = mins(cur.time) - mins(prev.time);
+    return diff === 0 ? "same time as the previous entry" : fmtGap(diff) + " after the previous entry";
+  }
+  function entriesText(n) { return n + (n === 1 ? " entry" : " entries"); }
+  function nowTime() { var d = new Date(); return pad(d.getHours()) + ":" + pad(d.getMinutes()); }
+
   function normalize() {
     if (!state || typeof state !== "object") state = {};
     if (!Array.isArray(state.topics)) state.topics = [];
@@ -472,9 +591,27 @@
       Object.keys(t.days).forEach(function (d) {
         var e = t.days[d];
         if (!e || !/^\d{4}-\d{2}-\d{2}$/.test(d)) { delete t.days[d]; return; }
-        var depth = +e.depth;
-        if (!(depth >= 1 && depth <= 4)) depth = 1;
-        t.days[d] = { depth: depth, count: Math.max(1, +e.count || 1), note: typeof e.note === "string" ? e.note : "" };
+        var entries = [], depth, note;
+        if (Array.isArray(e.entries)) {
+          e.entries.forEach(function (x) {
+            if (!x) return;
+            depth = +x.depth;
+            if (!(depth >= 1 && depth <= 4)) depth = 1;
+            note = sanitize(x.note);
+            entries.push({
+              id: x.id || uid(),
+              time: (typeof x.time === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(x.time)) ? x.time : "",
+              depth: depth, note: note, text: plainText(note)
+            });
+          });
+        } else {   // older format: one plain-text entry per day
+          depth = +e.depth;
+          if (!(depth >= 1 && depth <= 4)) depth = 1;
+          var raw = typeof e.note === "string" ? e.note : "";
+          entries.push({ id: uid(), time: "", depth: depth, note: raw.trim() ? legacyToHtml(raw) : "", text: raw.replace(/\s+/g, " ").trim() });
+        }
+        if (!entries.length) { delete t.days[d]; return; }
+        t.days[d] = { entries: sortEntries(entries) };
       });
     });
   }
@@ -604,16 +741,26 @@
     return parse(s).toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
   }
 
-  /* mastery: each studied day adds a set percentage for its depth, capped at 100 */
+  /* mastery: every entry adds a set percentage for its depth, capped at 100 */
   function pts(depth) { return prefs.points[depth]; }
+  function dayPoints(day) {
+    var n = 0;
+    day.entries.forEach(function (x) { n += pts(x.depth); });
+    return n;
+  }
+  function dayDepth(day) {
+    var m = 1;
+    day.entries.forEach(function (x) { if (x.depth > m) m = x.depth; });
+    return m;
+  }
   function mastery(t) {
     var total = 0;
-    Object.keys(t.days).forEach(function (d) { total += pts(t.days[d].depth); });
+    Object.keys(t.days).forEach(function (d) { total += dayPoints(t.days[d]); });
     return Math.min(100, total);
   }
   function cumulative(t) {
     var keys = Object.keys(t.days).sort(), tot = 0, out = {};
-    keys.forEach(function (d) { tot += pts(t.days[d].depth); out[d] = Math.min(100, tot); });
+    keys.forEach(function (d) { tot += dayPoints(t.days[d]); out[d] = Math.min(100, tot); });
     return out;
   }
   function band(p) { return p < 25 ? 1 : p < 50 ? 2 : p < 75 ? 3 : 4; }
@@ -627,7 +774,7 @@
   function daysStudied(t) { return Object.keys(t.days).length; }
   function timesStudied(t) {
     var n = 0;
-    Object.keys(t.days).forEach(function (d) { n += t.days[d].count; });
+    Object.keys(t.days).forEach(function (d) { n += t.days[d].entries.length; });
     return n;
   }
   function allStudiedDates() {
@@ -658,7 +805,9 @@
     q = q.toLowerCase();
     if (t.name.toLowerCase().indexOf(q) >= 0 || t.type.toLowerCase().indexOf(q) >= 0) return true;
     if (t.cats.some(function (id) { var c = getCat(id); return c && c.name.toLowerCase().indexOf(q) >= 0; })) return true;
-    return Object.keys(t.days).some(function (d) { return t.days[d].note.toLowerCase().indexOf(q) >= 0; });
+    return Object.keys(t.days).some(function (d) {
+      return t.days[d].entries.some(function (x) { return x.text.toLowerCase().indexOf(q) >= 0; });
+    });
   }
 
   function ring(p, size) {
@@ -767,17 +916,20 @@
           '<button class="dots" data-menu="' + t.id + '" aria-label="Options for ' + esc(t.name) + '">⋮</button></div>';
         rows += '<div class="crow">';
         dates.forEach(function (s) {
-          var e = t.days[s], cls = "cell", inner;
+          var e = t.days[s], cls = "cell", inner, dd = e ? dayDepth(e) : 0;
           if (s === tdy) cls += " today";
           if (e) {
-            cls += " c" + e.depth;
-            inner = '<span class="d">' + esc(cellLabel(s)) + '</span><b>' + cum[s] + '%</b>' + (e.note ? '<span class="note-dot" title="Has notes"></span>' : "");
+            var hasNote = e.entries.some(function (x) { return x.text; });
+            cls += " c" + dd;
+            inner = '<span class="d">' + esc(cellLabel(s)) + '</span><b>' + cum[s] + '%</b>' +
+                    (e.entries.length > 1 ? '<span class="d">' + entriesText(e.entries.length) + '</span>' : "") +
+                    (hasNote ? '<span class="note-dot" title="Has notes"></span>' : "");
           } else {
             cls += " none";
             inner = '<span class="d">' + esc(cellLabel(s)) + '</span>';
           }
           rows += '<button class="' + cls + '" data-cell="' + t.id + '|' + s + '" aria-label="' +
-                  esc(t.name + ", " + fullDate(s) + (e ? ", " + NAMES[e.depth] + " depth" : ", not studied")) + '">' + inner + '</button>';
+                  esc(t.name + ", " + fullDate(s) + (e ? ", " + entriesText(e.entries.length) + ", " + NAMES[dd] + " depth" : ", not studied")) + '">' + inner + '</button>';
         });
         rows += '</div>';
       });
@@ -870,8 +1022,8 @@
     var t = getTopic(view.topicId), p = mastery(t);
     var keys = Object.keys(t.days).sort();
     if (!view.asc) keys.reverse();
-    var withNotes = keys.filter(function (d) { return t.days[d].note; });
-    var noNotes = keys.length - withNotes.length;
+    var noteDays = keys.filter(function (d) { return t.days[d].entries.some(function (x) { return x.text; }); });
+    var noNotes = keys.length - noteDays.length;
 
     var html = '<button class="btn back" data-act="back">back to board</button>';
     html += '<div class="thead"><div class="who"><span class="ring-wrap m' + band(p) + '">' + ring(p, 62) + '</span>' +
@@ -883,24 +1035,31 @@
 
     html += '<div class="stats">' +
       '<div class="stat"><span>mastery</span><b>' + p + '%</b></div>' +
-      '<div class="stat"><span>times studied</span><b>' + timesStudied(t) + '</b></div>' +
+      '<div class="stat"><span>entries</span><b>' + timesStudied(t) + '</b></div>' +
       '<div class="stat"><span>days studied</span><b>' + daysStudied(t) + '</b></div></div>';
 
     html += '<div class="sec-head"><h2>Notes by day</h2>' +
             '<button class="btn small" data-act="sort">order: ' + (view.asc ? "oldest first" : "newest first") + '</button></div>';
 
-    if (!withNotes.length) {
+    if (!noteDays.length) {
       html += '<div class="empty-state"><p>No notes yet. Tap a day on the board and write one.</p></div>';
     } else {
-      withNotes.forEach(function (d) {
-        var e = t.days[d];
-        html += '<article class="entry b' + e.depth + '"><header><div><h3>' + esc(noteDate(d)) + '</h3>' +
-          '<span class="tag"><i class="dot c' + e.depth + '"></i>' + NAMES[e.depth].toLowerCase() + ' depth, ' + plural(e.count, "session") + '</span></div>' +
-          '<button class="btn small" data-edit="' + d + '">edit</button></header>' +
-          '<p class="note">' + esc(e.note) + '</p></article>';
+      noteDays.forEach(function (d) {
+        var ents = t.days[d].entries;
+        html += '<div class="dayblock"><h3 class="dayh">' + esc(noteDate(d)) + '<span class="dayn">' + entriesText(ents.length) + '</span></h3>';
+        ents.forEach(function (x, i) {
+          var gap = gapText(ents, i);
+          html += '<article class="entry b' + x.depth + '"><header><div class="eh">' +
+            '<span class="etime">' + (x.time ? esc(fmtTime(x.time)) : "no time") + '</span>' +
+            '<span class="tag"><i class="dot c' + x.depth + '"></i>' + NAMES[x.depth].toLowerCase() + ' depth, adds ' + pts(x.depth) + '%</span>' +
+            (gap ? '<span class="gap">' + esc(gap) + '</span>' : '') + '</div>' +
+            '<button class="btn small" data-edit="' + d + '|' + x.id + '">edit</button></header>' +
+            (x.note ? '<div class="rich">' + x.note + '</div>' : '<p class="hint">No notes in this entry.</p>') + '</article>';
+        });
+        html += '</div>';
       });
     }
-    if (noNotes > 0 && withNotes.length) {
+    if (noNotes > 0 && noteDays.length) {
       html += '<p class="hint">' + plural(noNotes, "studied day") + ' without notes</p>';
     }
 
@@ -1088,59 +1247,223 @@
     });
   }
 
-  function openDay(id, date) {
+  var TEXT_COLORS = ["#c99b55", "#d0605a", "#7fb06a", "#6fa8dc", "#a98bc9"];
+  var HL_COLOR = "rgba(241,194,119,0.45)";
+  function toolbarHtml() {
+    return '<div class="tb" role="toolbar" aria-label="Text formatting">' +
+      '<button type="button" data-fmt="h1">Title</button><button type="button" data-fmt="h2">Subtitle</button>' +
+      '<button type="button" data-fmt="h3">Heading</button><button type="button" data-fmt="p">Text</button><span class="tsep"></span>' +
+      '<button type="button" data-cmd="bold" class="tb-b" aria-label="Bold">B</button>' +
+      '<button type="button" data-cmd="italic" class="tb-i" aria-label="Italic">I</button>' +
+      '<button type="button" data-cmd="underline" class="tb-u" aria-label="Underline">U</button>' +
+      '<button type="button" data-cmd="strikeThrough" class="tb-s" aria-label="Strikethrough">S</button><span class="tsep"></span>' +
+      '<button type="button" data-cmd="insertUnorderedList">Bullets</button><button type="button" data-cmd="insertOrderedList">Numbers</button>' +
+      '<button type="button" data-fmt="quote">Quote</button><span class="tsep"></span>' +
+      '<button type="button" data-hl="1">Highlight</button>' +
+      TEXT_COLORS.map(function (c) {
+        return '<button type="button" class="tcol" data-color="' + c + '" style="background:' + c + '" aria-label="Text color ' + c + '"></button>';
+      }).join("") +
+      '<button type="button" data-cmd="removeFormat">Clear</button></div>';
+  }
+
+  function openDay(id, date, entryId) {
     var t = getTopic(id);
     if (!t) return;
-    var ex = t.days[date];
-    var st = { depth: ex ? ex.depth : 0, count: ex ? ex.count : 1 };
-    var html = '<h3>' + esc(fullDate(date)) + '</h3><p class="msub">' + esc(t.name) + ', ' + esc(t.type.toLowerCase()) + '</p>' +
-      '<div class="lbl" style="margin-top:0">how deep did you go?</div><div class="depth-btns">' +
-      [1, 2, 3, 4].map(function (n) {
-        return '<button type="button" class="dbtn c' + n + (st.depth === n ? " on" : "") + '" data-d="' + n + '">' +
-               NAMES[n].toLowerCase() + '<small>adds ' + pts(n) + '%</small></button>';
-      }).join("") + '</div>' +
-      '<p class="hint">Mastery goes up by the amount shown, and stops at 100%.</p>' +
-      '<div class="stepper"><span>study sessions this day</span><div>' +
-      '<button type="button" data-step="-1" aria-label="Fewer sessions">−</button><b id="cnt">' + st.count + '</b>' +
-      '<button type="button" data-step="1" aria-label="More sessions">+</button></div></div>' +
-      '<label class="lbl" for="dayNote">notes for this day</label>' +
-      '<textarea id="dayNote" placeholder="What did you learn or do?">' + esc(ex ? ex.note : "") + '</textarea>' +
-      '<div class="err" id="err" role="alert"></div>' +
-      '<div class="actions">' + (ex ? '<button type="button" class="btn danger" data-do="clear">clear day</button>' : "") +
-      '<span class="grow"></span><button type="button" class="btn" data-do="cancel">cancel</button>' +
-      '<button type="button" class="btn primary" data-do="save">save</button></div>';
+    var body = null, ed = null, lastRange = null;
 
-    openModal("Study log", html, function (m) {
+    function dayEntries() { return t.days[date] ? t.days[date].entries : []; }
+    function getEntry(eid) { return dayEntries().filter(function (x) { return x.id === eid; })[0]; }
+    function rteEl() { return body.querySelector("#rte"); }
+    function errEl() { return body.querySelector("#err"); }
+
+    function refreshEmpty() {
+      var r = rteEl();
+      if (!r) return;
+      if (r.textContent.trim() || r.querySelector("li")) r.removeAttribute("data-empty"); else r.setAttribute("data-empty", "1");
+    }
+    function saveRange() {
+      var r = rteEl(), s = window.getSelection();
+      if (r && s.rangeCount && r.contains(s.getRangeAt(0).commonAncestorContainer)) lastRange = s.getRangeAt(0).cloneRange();
+    }
+    function restoreRange() {
+      if (!lastRange) return;
+      var s = window.getSelection();
+      s.removeAllRanges(); s.addRange(lastRange);
+    }
+    function updateTools() {
+      var r = rteEl(), s = window.getSelection();
+      if (!r || !s.rangeCount || !r.contains(s.anchorNode)) return;
+      ["bold", "italic", "underline", "strikeThrough"].forEach(function (c) {
+        var b = body.querySelector('[data-cmd="' + c + '"]'), on = false;
+        if (!b) return;
+        try { on = document.queryCommandState(c); } catch (e) { /* ignore */ }
+        b.classList.toggle("on", !!on);
+      });
+      var blk = "";
+      try { blk = String(document.queryCommandValue("formatBlock") || "").toLowerCase().replace(/[<>]/g, ""); } catch (e) { /* ignore */ }
+      Array.prototype.forEach.call(body.querySelectorAll("[data-fmt]"), function (b) {
+        var f = b.getAttribute("data-fmt");
+        b.classList.toggle("on", blk === (f === "quote" ? "blockquote" : f));
+      });
+    }
+    function onSel() { if (ed) { saveRange(); updateTools(); } }
+
+    function runFormat(btn) {
+      var r = rteEl();
+      r.focus();
+      restoreRange();
+      var cmd = btn.getAttribute("data-cmd"), fmt = btn.getAttribute("data-fmt"), col = btn.getAttribute("data-color"), hl = btn.getAttribute("data-hl");
+      try {
+        if (fmt) {
+          var tag = fmt === "quote" ? "blockquote" : fmt;
+          var cur = String(document.queryCommandValue("formatBlock") || "").toLowerCase().replace(/[<>]/g, "");
+          document.execCommand("formatBlock", false, "<" + ((cur === tag && tag !== "p") ? "p" : tag) + ">");
+        } else if (col) {
+          document.execCommand("foreColor", false, col);
+        } else if (hl) {
+          var v = String(document.queryCommandValue("hiliteColor") || "");
+          document.execCommand("hiliteColor", false, /241,\s*194,\s*119/.test(v) ? "transparent" : HL_COLOR);
+        } else if (cmd) {
+          document.execCommand(cmd, false, null);
+        }
+      } catch (e) { /* ignore */ }
+      saveRange(); refreshEmpty(); updateTools();
+    }
+
+    function updateGap() {
+      var el = body.querySelector("#gapHint"), time = body.querySelector("#eTime").value;
+      if (!el) return;
+      var others = dayEntries().filter(function (x) { return x.id !== ed.id && x.time; });
+      if (!time) { el.textContent = "No time set, so no time gap is shown."; return; }
+      var prev = null;
+      others.forEach(function (x) { if (x.time <= time && (!prev || x.time > prev.time)) prev = x; });
+      if (!prev) { el.textContent = others.length ? "Before the other entries this day." : "First entry of the day."; return; }
+      var diff = mins(time) - mins(prev.time);
+      el.textContent = diff === 0 ? "Same time as the previous entry." : fmtGap(diff) + " after the previous entry.";
+    }
+
+    function showList() {
+      ed = null;
+      var ents = dayEntries();
+      if (!ents.length) { showEditor(null, true); return; }
+      var total = 0;
+      ents.forEach(function (x) { total += pts(x.depth); });
+      var html = '<h3>' + esc(fullDate(date)) + '</h3><p class="msub">' + esc(t.name) + ', ' + esc(t.type.toLowerCase()) + ', ' +
+        entriesText(ents.length) + ' adding ' + total + '%</p><div class="elist">';
+      ents.forEach(function (x, i) {
+        var gap = gapText(ents, i);
+        html += '<div class="eitem b' + x.depth + '"><div class="eh"><span class="etime">' + (x.time ? esc(fmtTime(x.time)) : "no time") + '</span>' +
+          '<span class="tag"><i class="dot c' + x.depth + '"></i>' + NAMES[x.depth].toLowerCase() + ' depth, adds ' + pts(x.depth) + '%</span>' +
+          (gap ? '<span class="gap">' + esc(gap) + '</span>' : '') + '</div>' +
+          '<p class="epre">' + (x.text ? esc(x.text) : "No notes") + '</p>' +
+          '<div class="eact"><button type="button" class="btn small" data-ee="' + x.id + '">edit</button>' +
+          '<button type="button" class="btn small danger" data-ed="' + x.id + '">delete</button></div></div>';
+      });
+      html += '</div><div class="actions" style="margin-top:16px"><button type="button" class="btn primary" data-do="addEntry">add another entry</button>' +
+        '<span class="grow"></span><button type="button" class="btn" data-do="cancel">close</button></div>';
+      body.innerHTML = html;
+    }
+
+    function showEditor(entry, direct) {
+      var isNew = !entry;
+      ed = { id: entry ? entry.id : null, depth: entry ? entry.depth : 0, direct: !!direct };
+      var time = entry ? entry.time : nowTime();
+      var html = '<h3>' + (isNew ? "New entry" : "Edit entry") + '</h3><p class="msub">' + esc(fullDate(date)) + ', ' + esc(t.name) + '</p>' +
+        '<div class="row2" style="align-items:flex-end;gap:14px;flex-wrap:wrap"><label class="cin" style="flex:0 0 auto">time<input type="time" id="eTime" value="' + time + '"></label>' +
+        '<p class="hint" id="gapHint" style="margin:0 0 8px;flex:1 1 180px"></p></div>' +
+        '<div class="lbl">how deep did you go?</div><div class="depth-btns">' +
+        [1, 2, 3, 4].map(function (n) {
+          return '<button type="button" class="dbtn c' + n + (ed.depth === n ? " on" : "") + '" data-d="' + n + '">' +
+                 NAMES[n].toLowerCase() + '<small>adds ' + pts(n) + '%</small></button>';
+        }).join("") + '</div>' +
+        '<p class="hint">Every entry adds its percentage to mastery, up to 100%.</p>' +
+        '<div class="lbl">notes</div>' + toolbarHtml() +
+        '<div class="rte" id="rte" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Notes" data-ph="What did you learn or do?"></div>' +
+        '<div class="err" id="err" role="alert"></div>' +
+        '<div class="actions">' + (isNew ? "" : '<button type="button" class="btn danger" data-do="delEntry">delete</button>') +
+        '<span class="grow"></span><button type="button" class="btn" data-do="cancel">cancel</button>' +
+        '<button type="button" class="btn" data-do="saveAdd">save and add another</button>' +
+        '<button type="button" class="btn primary" data-do="save">save</button></div>';
+      body.innerHTML = html;
+      lastRange = null;
+      var r = rteEl();
+      r.innerHTML = entry ? entry.note : "";
+      refreshEmpty();
+      try { document.execCommand("defaultParagraphSeparator", false, "p"); } catch (e) { /* ignore */ }
+      updateGap();
+    }
+
+    function commit(addAnother) {
+      if (!ed.depth) { errEl().textContent = "Pick how deep you went first."; return; }
+      var note = sanitize(rteEl().innerHTML), text = plainText(note);
+      if (!text) note = "";
+      var entry = { id: ed.id || uid(), time: body.querySelector("#eTime").value || "", depth: ed.depth, note: note, text: text };
+      var day = t.days[date] || (t.days[date] = { entries: [] }), idx = -1;
+      day.entries.forEach(function (x, i) { if (x.id === entry.id) idx = i; });
+      if (idx >= 0) day.entries[idx] = entry; else day.entries.push(entry);
+      day.entries = sortEntries(day.entries);
+      var wasDirect = ed.direct;
+      save(); render();
+      if (addAnother) showEditor(null, false);
+      else if (wasDirect) closeModal();
+      else showList();
+    }
+    function removeEntry(eid) {
+      if (!confirm("Delete this entry?")) return;
+      var day = t.days[date];
+      if (!day) return;
+      day.entries = day.entries.filter(function (x) { return x.id !== eid; });
+      if (!day.entries.length) delete t.days[date];
+      var wasDirect = ed && ed.direct;
+      save(); render();
+      if (!dayEntries().length || wasDirect) closeModal(); else showList();
+    }
+
+    openModal("Study log", "", function (m) {
+      body = m.querySelector(".mbody");
+      m.style.maxWidth = "560px";
+      document.addEventListener("selectionchange", onSel);
+      m.addEventListener("mousedown", function (e) { if (e.target.closest(".tb button")) e.preventDefault(); });
+      m.addEventListener("input", function (e) {
+        if (e.target.id === "eTime") updateGap();
+        else if (e.target.closest && e.target.closest("#rte")) refreshEmpty();
+      });
+      m.addEventListener("paste", function (e) {
+        if (!(e.target.closest && e.target.closest("#rte"))) return;
+        e.preventDefault();
+        var txt = (e.clipboardData || window.clipboardData).getData("text/plain");
+        document.execCommand("insertText", false, txt);
+      });
       m.addEventListener("click", function (e) {
-        var d = e.target.closest("[data-d]");
-        if (d) {
-          st.depth = +d.getAttribute("data-d");
-          Array.prototype.forEach.call(m.querySelectorAll("[data-d]"), function (b) {
-            b.classList.toggle("on", +b.getAttribute("data-d") === st.depth);
+        var tg = e.target;
+        var d = tg.closest("[data-d]");
+        if (d && ed) {
+          ed.depth = +d.getAttribute("data-d");
+          Array.prototype.forEach.call(body.querySelectorAll("[data-d]"), function (b) {
+            b.classList.toggle("on", +b.getAttribute("data-d") === ed.depth);
           });
-          m.querySelector("#err").textContent = "";
+          errEl().textContent = "";
           return;
         }
-        var s = e.target.closest("[data-step]");
-        if (s) {
-          st.count = Math.max(1, st.count + +s.getAttribute("data-step"));
-          m.querySelector("#cnt").textContent = st.count;
-          return;
-        }
-        var a = e.target.closest("[data-do]");
+        var f = tg.closest(".tb button");
+        if (f && ed) { runFormat(f); return; }
+        var ee = tg.closest("[data-ee]");
+        if (ee) { showEditor(getEntry(ee.getAttribute("data-ee")), false); return; }
+        var edl = tg.closest("[data-ed]");
+        if (edl) { removeEntry(edl.getAttribute("data-ed")); return; }
+        var a = tg.closest("[data-do]");
         if (!a) return;
         var act = a.getAttribute("data-do");
-        if (act === "cancel") closeModal();
-        if (act === "clear") {
-          if (confirm("Clear this day, including its notes?")) { delete t.days[date]; save(); closeModal(); render(); }
-        }
-        if (act === "save") {
-          if (!st.depth) { m.querySelector("#err").textContent = "Pick how deep you went first."; return; }
-          t.days[date] = { depth: st.depth, count: st.count, note: m.querySelector("#dayNote").value.replace(/\s+$/, "") };
-          save(); closeModal(); render();
-        }
+        if (act === "addEntry") showEditor(null, false);
+        else if (act === "cancel") { if (ed && !ed.direct) showList(); else closeModal(); }
+        else if (act === "save") commit(false);
+        else if (act === "saveAdd") commit(true);
+        else if (act === "delEntry") removeEntry(ed.id);
       });
-    });
+      if (entryId && getEntry(entryId)) showEditor(getEntry(entryId), true);
+      else if (!dayEntries().length) showEditor(null, true);
+      else showList();
+    }, function () { document.removeEventListener("selectionchange", onSel); });
   }
 
   /* ---------- images ---------- */
@@ -1291,7 +1614,7 @@
       '<p class="hint">A typed name is used instead of the list. It works for fonts installed on your device and for Google Fonts.</p>' +
       '<p class="fprev">The quick brown fox jumps over the lazy dog 0123456789</p>' +
 
-      '<div class="sh">Mastery</div><div class="lbl">percent added for a day studied at each depth</div><div class="pts">' +
+      '<div class="sh">Mastery</div><div class="lbl">percent added by each entry, by depth</div><div class="pts">' +
       [1, 2, 3, 4].map(function (n) {
         return '<label>' + NAMES[n].toLowerCase() + '<input type="number" min="1" max="100" step="1" inputmode="numeric" data-p="' + n + '" value="' + tmp.points[n] + '"></label>';
       }).join("") + '</div>' +
@@ -1454,7 +1777,7 @@
     el = t.closest("[data-menu]");
     if (el) { openMenu(el.getAttribute("data-menu")); return; }
     el = t.closest("[data-edit]");
-    if (el) { openDay(view.topicId, el.getAttribute("data-edit")); return; }
+    if (el) { var ep = el.getAttribute("data-edit").split("|"); openDay(view.topicId, ep[0], ep[1]); return; }
     el = t.closest("[data-cat]");
     if (el) { var cid = el.getAttribute("data-cat"); view.cat = (view.cat === cid) ? null : cid; fillCats(); return; }
     el = t.closest("[data-tcat]");
