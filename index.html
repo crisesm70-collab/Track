@@ -227,17 +227,6 @@
   .cphead { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
   .cphead h3 { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
   .cpact { display: flex; gap: 8px; flex-wrap: wrap; }
-  .tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
-  .tcard {
-    display: flex; align-items: center; gap: 10px; text-align: left; min-width: 0;
-    background: var(--empty); border: 1px solid var(--line); border-left: 3px solid var(--band); border-radius: 8px;
-    padding: 10px; color: var(--text);
-  }
-  .tcard:hover { border-color: var(--brass); }
-  .tcard .txt { min-width: 0; display: flex; flex-direction: column; }
-  .tcard .nm { font-family: var(--serif); font-weight: 700; font-size: 1.1rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tcard small { font-size: .68rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tcard small.type { color: var(--mauve); }
 
   /* ---------- topic view ---------- */
   .back { margin-bottom: 18px; }
@@ -722,11 +711,10 @@
 
   /* ---------- drawing ---------- */
   function render() {
-    var b = document.getElementById("board");
-    var sx = b ? b.scrollLeft : 0, sy = window.scrollY;
+    var xs = {}, sy = window.scrollY, ids = ["board", "catBoard"];
+    ids.forEach(function (id) { var b = document.getElementById(id); xs[id] = b ? b.scrollLeft : 0; });
     draw();
-    var b2 = document.getElementById("board");
-    if (b2) b2.scrollLeft = sx;
+    ids.forEach(function (id) { var b = document.getElementById(id); if (b) b.scrollLeft = xs[id]; });
     window.scrollTo(0, sy);
   }
   function draw() {
@@ -765,21 +753,9 @@
     fillCats();
   }
 
-  function fillBoard() {
-    var area = document.getElementById("boardArea");
-    if (!area) return;
-    var q = view.query.trim();
-    var list = state.topics.filter(function (t) { return matches(t, q); });
-    var info = document.getElementById("searchInfo");
-    if (info) info.textContent = q ? list.length + " of " + state.topics.length : "";
-
-    var html = "";
-    if (!state.topics.length) {
-      html = '<div class="empty-state"><p>No topics yet.</p><button class="btn primary" data-act="add">add your first topic</button></div>';
-    } else if (!list.length) {
-      html = '<div class="empty-state"><p>No topics match "' + esc(q) + '".</p></div>';
-    } else {
-      var dates = dateList(), tdy = today();
+  /* topic rows with day cells: used by the main board and inside a category */
+  function boardHtml(list, dates, scrollId) {
+    var tdy = today();
       var labels = "", rows = "";
       list.forEach(function (t) {
         var p = mastery(t), cum = cumulative(t);
@@ -805,8 +781,26 @@
         });
         rows += '</div>';
       });
-      html = '<div class="boardwrap"><div class="labels">' + labels + '</div>' +
-             '<div class="scroller" id="board"><div class="cells">' + rows + '</div></div></div>' +
+    return '<div class="boardwrap"><div class="labels">' + labels + '</div>' +
+           '<div class="scroller" id="' + scrollId + '"><div class="cells">' + rows + '</div></div></div>';
+  }
+
+  function fillBoard() {
+    var area = document.getElementById("boardArea");
+    if (!area) return;
+    var q = view.query.trim();
+    var list = state.topics.filter(function (t) { return matches(t, q); });
+    var info = document.getElementById("searchInfo");
+    if (info) info.textContent = q ? list.length + " of " + state.topics.length : "";
+
+    var html = "";
+    if (!state.topics.length) {
+      html = '<div class="empty-state"><p>No topics yet.</p><button class="btn primary" data-act="add">add your first topic</button></div>';
+    } else if (!list.length) {
+      html = '<div class="empty-state"><p>No topics match "' + esc(q) + '".</p></div>';
+    } else {
+      var dates = dateList();
+      html = boardHtml(list, dates, "board") +
              '<div class="more"><button class="btn small" data-act="more">load 30 earlier days</button>' +
              '<span>showing back to ' + esc(cellLabel(dates[dates.length - 1])) + '</span></div>';
     }
@@ -814,17 +808,12 @@
   }
 
   /* category section at the bottom of the board page */
-  function topicCard(t) {
-    var p = mastery(t);
-    return '<button class="tcard m' + band(p) + '" data-topic="' + t.id + '" aria-label="Open ' + esc(t.name) + '">' + ring(p, 44) +
-      '<span class="txt"><span class="nm">' + esc(t.name) + '</span><small class="type">' + esc(t.type.toLowerCase()) + '</small>' +
-      '<small>' + timesStudied(t) + ' studied, ' + plural(daysStudied(t), "day") + '</small></span></button>';
-  }
   function fillCats() {
     var area = document.getElementById("catArea");
     if (!area) return;
     var unsorted = state.topics.filter(function (t) { return !t.cats.length; });
     if (view.cat && view.cat !== "_none" && !getCat(view.cat)) view.cat = null;
+    if (view.cat === "_none" && !unsorted.length) view.cat = null;
 
     var html = '<h2 class="ch">Category</h2><div class="chips">';
     state.cats.forEach(function (c) {
@@ -838,18 +827,30 @@
 
     if (!state.cats.length) {
       html += '<p class="hint" style="margin-top:10px">No categories yet. Add one, like Psychology or Science, then connect your topics to it.</p>';
+    } else if (!view.cat) {
+      html += '<p class="hint" style="margin-top:10px">Tap a category to see the topics inside it.</p>';
     }
+
+    var list = null, title = "", actions = "";
     if (view.cat === "_none") {
-      html += '<div class="catpanel"><div class="cphead"><h3>Unsorted</h3></div>' +
-              '<div class="tgrid">' + unsorted.map(topicCard).join("") + '</div></div>';
+      list = unsorted; title = "Unsorted";
     } else if (view.cat) {
-      var c = getCat(view.cat), list = catTopics(c.id);
-      html += '<div class="catpanel"><div class="cphead"><h3>' + esc(c.name) + '</h3><div class="cpact">' +
-        '<button class="btn small" data-act="catconnect">connect topics</button>' +
-        '<button class="btn small" data-act="catrename">rename</button>' +
-        '<button class="btn small danger" data-act="catdelete">delete</button></div></div>' +
-        (list.length ? '<div class="tgrid">' + list.map(topicCard).join("") + '</div>'
-                     : '<p class="hint">No topics here yet. Tap connect topics to add some.</p>') + '</div>';
+      var c = getCat(view.cat);
+      list = catTopics(c.id); title = c.name;
+      actions = '<button class="btn small" data-act="catconnect">connect topics</button>' +
+                '<button class="btn small" data-act="catrename">rename</button>' +
+                '<button class="btn small danger" data-act="catdelete">delete</button>';
+    }
+    if (list) {
+      html += '<div class="catpanel"><div class="cphead"><div><h3>' + esc(title) + '</h3><p class="hint" style="margin-top:2px">' +
+              plural(list.length, "topic") + ' inside</p></div>' + (actions ? '<div class="cpact">' + actions + '</div>' : '') + '</div>';
+      if (list.length) {
+        html += boardHtml(list, dateList(), "catBoard") +
+                '<div class="more"><button class="btn small" data-act="more">load 30 earlier days</button></div>';
+      } else {
+        html += '<p class="hint">No topics inside yet. Tap connect topics to add some.</p>';
+      }
+      html += '</div>';
     }
     area.innerHTML = html;
   }
@@ -1394,8 +1395,8 @@
   function openTopic(id) {
     var t = getTopic(id);
     if (!t) return;
-    var b = document.getElementById("board");
-    view.savedX = b ? b.scrollLeft : 0;
+    view.saved = {};
+    ["board", "catBoard"].forEach(function (k) { var b = document.getElementById(k); view.saved[k] = b ? b.scrollLeft : 0; });
     view.savedY = window.scrollY;
     view.topicId = id;
     draw();
@@ -1404,8 +1405,7 @@
   function backToBoard() {
     view.topicId = null;
     draw();
-    var b = document.getElementById("board");
-    if (b) b.scrollLeft = view.savedX;
+    ["board", "catBoard"].forEach(function (k) { var b = document.getElementById(k); if (b && view.saved) b.scrollLeft = view.saved[k] || 0; });
     window.scrollTo(0, view.savedY);
   }
 
